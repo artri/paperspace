@@ -1,0 +1,7 @@
+FROM openjdk:15-slim-buster
+ENV spring_profiles_active=docker
+EXPOSE 8080
+
+ARG JAR_FILE=target/api.jar
+ADD ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
