@@ -45,6 +45,8 @@ It is also possible to build booth applications and deploy them on a server or l
     after the application is running you should be able to open the app through the port specified in the api service.
     For example if you mapped port 8080, then navigate to http://localhost:8080
     
+There is also a minimal docker-compose file where only the options needed are set for reference.
+    
 ### docker configuration
 API Configuration Options
 
