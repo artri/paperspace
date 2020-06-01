@@ -1,7 +1,7 @@
 version: "3"
 services:
   api:
-    image: paperspace:latest
+    image: dedicatedcode/paperspace:latest
     depends_on:
       - db
       - search
@@ -34,7 +34,7 @@ services:
     ports:
       - 8080:8080
   feeder:
-    image: paperspace-feeder:latest
+    image: dedicatedcode/paperspace-feeder:latest
     depends_on:
       - api
     restart: unless-stopped
@@ -57,13 +57,10 @@ services:
       - ../data/feeder/documents/input:/data/input/documents
       - ../data/feeder/documents/error:/data/errors/documents
   search:
-    image: solr:8.5.0
+    image: dedicatedcode/paperspace-search:latest
     restart: unless-stopped
     volumes:
-      - ./solr/config:/var/solr/data/cores/
       - ../data/solr:/data/solr
-    ports:
-      - 8983:8983
   db:
     image: mariadb
     restart: unless-stopped

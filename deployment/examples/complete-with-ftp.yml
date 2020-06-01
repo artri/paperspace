@@ -1,0 +1,91 @@
+version: "3"
+services:
+  api:
+    image: dedicatedcode/paperspace:latest
+    depends_on:
+      - db
+      - search
+    restart: unless-stopped
+    environment:
+      APPLICATION_HOST: 'http://papers.dahoam'
+      DB_TABLE: 'paperspace'
+      DB_USER: 'paperspace'
+      DB_PASSWORD: 'paperspace'
+      ENABLE_MAIL: 'true'
+      MAIL_TO_ADDRESS: 'REPLACE WITH EMAIL ADDRESS'
+      MAIL_FROM_ADDRESS: 'REPLACE WITH EMAIL ADDRESS'
+      MAIL_ATTACH_DOCUMENTS: 'false'
+      MAILING_HOST: 'REPLACE WITH MAIL SERVER HOST'
+      MAILING_PORT: 'REPLACE WITH MAIL SERVER PORT'
+      MAILING_PROTOCOL: 'smtp'
+      MAILING_SMTP_AUTH: 'true'
+      MAILING_SMTP_USE_STARTTLS: 'true'
+      MAILING_USERNAME: 'REPLACE WITH MAIL SERVER USERNAME'
+      MAILING_PASSWORD: 'REPLACE WITH MAIL SERVER PASSWORD'
+    volumes:
+      - /data/paperspace/api/binary:/binary
+    networks:
+      - default
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mayan.entrypoints=web"
+      - "traefik.http.routers.mayan.rule=Host(`papers.dahoam`)"
+      - "traefik.docker.network=traefik_default"
+
+  feeder:
+    image: dedicatedcode/paperspace-feeder:latest
+    depends_on:
+      - api
+    restart: unless-stopped
+    environment:
+      OCR_LANGUAGE: 'deu'
+    volumes:
+      - /data/paperspace/feeder/task/input:/data/input/tasks
+      - /data/paperspace/feeder/task/error:/data/errors/tasks
+      - /data/paperspace/feeder/documents/input:/data/input/documents
+      - /data/paperspace/feeder/documents/error:/data/errors/documents
+    networks:
+      - default
+      - web
+  ftp:
+    image: wildscamp/vsftpd
+    restart: unless-stopped
+    environment:
+      PASV_ADDRESS: 'REPLACE WITH FTP IP OR HOSTNAME'
+      VSFTPD_USER_1: 'scanner:password::'
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    volumes:
+      - /data/paperspace/feeder/task/input:/home/virtual/scanner/tasks
+      - /data/paperspace/feeder/documents/input:/home/virtual/scanner/documents
+    networks:
+      - default
+      - web
+  search:
+    image: dedicatedcode/paperspace-search:latest
+    restart: unless-stopped
+    volumes:
+      - /data/paperspace/search:/data/solr
+    networks:
+      - default
+      - web
+
+  db:
+    image: mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: 'paperspace'
+      MYSQL_USER: 'paperspace'
+      MYSQL_PASSWORD: 'paperspace'
+    volumes:
+      - /data/paperspace/database:/var/lib/mysql
+    networks:
+      - default
+      - web
+
+networks:
+  web:
+    external:
+      name: traefik_default
