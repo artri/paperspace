@@ -7,3 +7,5 @@
 /data/
 /input/
 /deployment/.env
+/deployment/examples/.env
+/local-data/
