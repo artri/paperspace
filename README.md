@@ -16,6 +16,19 @@ what is it **not** (and probably never be)
   - no user management
   - no settings in the ui
   
+## use case
+I was getting tired of having to store all my offline documents and then can´t find the one I need right now. 
+After trying multiple solutions for this problem and not finding a simple one I decided to tackle that on my own.
+
+So my workflow with paper{s}pace:
+- scan a document with my [Brother-ADS-1100W](https://www.amazon.de/Brother-ADS-1100W-Dokumentenscanner-Duplex-schwarz/dp/B00GHUCKBY) which uploads it via ftp in either the documents- or tasks-folder.
+- get a mail when the processing is done and i can open the document directly from my browser and print it or add some metadata. 
+- if it is a task, then the app will remind me when the task needs attention (I´m terrible at remembering that stuff).
+
+Inspired by
+- [Paperless](https://github.com/the-paperless-project/paperless) 
+- [Mayan EDMS](https://www.mayan-edms.com/) 
+
 ## Deployment
 
 the easiest solution is to adjust the provided docker-compose file and deploy the whole stack.
@@ -47,6 +60,25 @@ It is also possible to build booth applications and deploy them on a server or l
     
 There is also a minimal docker-compose file where only the options needed are set for reference.
     
+### example docker stacks
+
+####complete stack including all available configuration options
+This stack deploys the whole application (api,feeder,search and database). Use this if you have already a way to drop files into the watched folders.
+
+[docker-compose.yml](https://gitlab.com/dedicatedcode/paperspace/-/blob/master/deployment/examples/docker-compose.yml)
+
+####minimal stack
+This stack deploys the whole application (api,feeder,search and database). But with only the bare minimum of required configuration options.
+This stack does not send emails on an upload of a document. It also does not send reminder emails. 
+
+[docker-compose.yml](https://gitlab.com/dedicatedcode/paperspace/-/blob/master/deployment/examples/minimal-docker-compose.yml)
+
+####stack including a preconfigured ftp server
+This stack comes with a ftp server which listens on port 21 incl. PASV support. 
+You can either upload documents or tasks directly via ftp or setup your document scanner to upload the scanned PDF´s in the appropriate folders.
+
+[docker-compose.yml](https://gitlab.com/dedicatedcode/paperspace/-/blob/master/deployment/examples/complete-with-ftp.yml)
+
 ### docker configuration
 API Configuration Options
 
