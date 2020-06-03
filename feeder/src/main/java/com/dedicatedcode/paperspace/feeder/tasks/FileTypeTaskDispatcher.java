@@ -30,7 +30,7 @@ public class FileTypeTaskDispatcher implements Runnable {
         long currentSize = file.length();
         while (currentSize != lastFileSize || currentSize == 0) {
             log.debug("file [{}] is still written size!=lastCheckedSize [{}!={}], will sleep for a second", file, currentSize, lastFileSize);
-            lastFileSize = currentSize;
+            lastFileSize = file.length();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

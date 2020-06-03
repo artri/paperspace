@@ -91,8 +91,8 @@ public class Feeder {
 
     @PostConstruct
     private void registerWatchServices() {
-        handleExistingFiles(this.configuration.getTasks().getInput());
-        handleExistingFiles(this.configuration.getDocuments().getInput());
+        handleExistingFiles(this.configuration.getTasks().getInput(), InputType.TASK);
+        handleExistingFiles(this.configuration.getDocuments().getInput(), InputType.DOCUMENT);
         List<Callable<Void>> watchers = new ArrayList<>();
         watchers.add(createWatchTask(this.configuration.getTasks().getInput(), InputType.TASK));
         watchers.add(createWatchTask(this.configuration.getDocuments().getInput(), InputType.DOCUMENT));
@@ -104,11 +104,11 @@ public class Feeder {
         }
     }
 
-    private void handleExistingFiles(File folder) {
+    private void handleExistingFiles(File folder, InputType type) {
         File[] existingTasks = folder.listFiles();
         if (existingTasks != null) {
             Arrays.asList(existingTasks)
-                    .forEach(file -> threadPool.submit(new FileTypeTaskDispatcher(file, InputType.TASK, configuration, threadPool)));
+                    .forEach(file -> threadPool.submit(new FileTypeTaskDispatcher(file, type, configuration, threadPool)));
         }
     }
 }
