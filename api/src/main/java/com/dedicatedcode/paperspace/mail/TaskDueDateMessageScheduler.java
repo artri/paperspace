@@ -62,4 +62,10 @@ public class TaskDueDateMessageScheduler implements TaskDocumentListener {
                         recipient,
                         attachments), messageIdentifier);
     }
+
+    @Override
+    public void deleted(TaskDocument document) {
+        String messageIdentifier = "TASK_DUE_" + document.getId();
+        this.messageService.getScheduledMessageBy(messageIdentifier).forEach(messageService::deleteMessage);
+    }
 }

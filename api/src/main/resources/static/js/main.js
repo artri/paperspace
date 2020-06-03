@@ -257,6 +257,23 @@ function DocumentController(config) {
                 });
             })
         }
+
+        let deleteButton = document.querySelector(configuration.deleteButton);
+        if (deleteButton) {
+            var deleteLadda = Ladda.create(deleteButton);
+            $(configuration.deleteButton).on('click', (e) => {
+                deleteLadda.start();
+                $.ajax({
+                    url: configuration.deleteUrl,
+                    type: 'DELETE'
+                }).done(() => window.location = configuration.appUrl)
+                    .fail((error) => {
+                        console.error(error);
+                    }).always(() => {
+                    deleteLadda.stop();
+                });
+            })
+        }
         $(configuration.saveButton).click((e) => {
             saveLadda.start();
             e.preventDefault();
@@ -267,7 +284,6 @@ function DocumentController(config) {
                 }).always(() => {
                 saveLadda.stop();
             });
-            console.log();
             return false;
         })
     }

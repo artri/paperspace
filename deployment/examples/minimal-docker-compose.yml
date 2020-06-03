@@ -39,7 +39,6 @@ services:
     image: mariadb
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: '${SQL_ROOT_PASSWORD}'
       MYSQL_DATABASE: '${MYSQL_DATABASE}'
       MYSQL_USER: '${MYSQL_USER}'
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'

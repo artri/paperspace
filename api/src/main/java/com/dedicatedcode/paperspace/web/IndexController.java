@@ -7,6 +7,7 @@ import com.dedicatedcode.paperspace.model.TaskDocument;
 import com.dedicatedcode.paperspace.model.TaskDocumentListener;
 import com.dedicatedcode.paperspace.search.SolrService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -21,12 +22,14 @@ public class IndexController {
     private final DocumentService documentService;
     private final List<TaskDocumentListener> taskListeners;
     private final SolrService solrService;
+    private final String appHost;
 
     @Autowired
-    public IndexController(DocumentService documentService, List<TaskDocumentListener> taskListeners, SolrService solrService) {
+    public IndexController(DocumentService documentService, List<TaskDocumentListener> taskListeners, SolrService solrService, @Value("${app.host}") String appHost) {
         this.documentService = documentService;
         this.taskListeners = taskListeners;
         this.solrService = solrService;
+        this.appHost = appHost;
     }
 
     @RequestMapping("/")
@@ -45,6 +48,7 @@ public class IndexController {
         } else {
             model.addAttribute("document", new DocumentResponse(document));
         }
+        model.addAttribute("appHost", appHost);
         return "task";
     }
 

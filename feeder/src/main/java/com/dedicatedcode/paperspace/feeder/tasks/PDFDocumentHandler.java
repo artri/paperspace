@@ -104,7 +104,7 @@ public class PDFDocumentHandler extends FileSizeCheckingTask {
     private void uploadPage(IDResponse document, BufferedImage previewImage, String text, int pageNumber) {
         // write image to tmp file
         try {
-            File previewImageFile = File.createTempFile("archiify-preview", ".png");
+            File previewImageFile = File.createTempFile("paper{s}pace-preview", ".png");
             if (ImageIOUtil.writeImage(previewImage, previewImageFile.getAbsolutePath(), 300)) {
                 UUID uploadBinaryId = uploadBinary(previewImageFile);
                 String pagesUrl = document.getLinks().pages;

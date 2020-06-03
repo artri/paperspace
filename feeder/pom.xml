@@ -8,7 +8,7 @@
         <version>2.3.0.RELEASE</version>
         <relativePath/>
     </parent>
-    <groupId>com.dedicatedcode.archiify</groupId>
+    <groupId>com.dedicatedcode.paperspace</groupId>
     <artifactId>feeder</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>feeder</name>

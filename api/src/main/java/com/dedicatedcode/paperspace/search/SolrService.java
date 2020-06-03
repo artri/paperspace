@@ -10,6 +10,7 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +112,6 @@ public class SolrService {
         } catch (IOException | SolrServerException e) {
             throw new RuntimeException("Unable to store document in search", e);
         }
-
     }
 
     public void reindex() {
@@ -121,7 +121,20 @@ public class SolrService {
             log.info("start indexing of [{}]nr of documents", documents.size());
             documents.forEach(this::index);
         } catch (SolrServerException | IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Unable to reindex all documents", e);
+        }
+    }
+
+    public void delete(Document document) {
+        try {
+            UpdateResponse response = this.solrClient.deleteByQuery("id:" + document.getId());
+            if (response.getStatus() == 0) {
+                log.info("deletion of document [{}] was successful", document.getId());
+            } else {
+                log.warn("could not delete document [{}] from solr. Please run reindex again.", document.getId());
+            }
+        } catch (SolrServerException | IOException e) {
+            throw new RuntimeException("Unable to reindex all documents", e);
         }
     }
 }

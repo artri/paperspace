@@ -90,6 +90,27 @@ public class DocumentController {
         return new DocumentResponse(document);
     }
 
+    @DeleteMapping({"/document/{id}", "/task/{id}",})
+    public DocumentResponse deleteDocument(@PathVariable UUID id, @RequestParam(required = false) String title, @RequestParam(required = false) String description, @RequestParam(required = false) String dueDate) {
+        Document document = this.documentService.getDocument(id);
+        if (document == null) {
+            throw new UnknownPageException("unable to find document with id [" + id + "]");
+        }
+        this.documentService.delete(document);
+
+        if (document instanceof TaskDocument) {
+            for (TaskDocumentListener taskListener : taskListeners) {
+                taskListener.deleted((TaskDocument) document);
+            }
+        } else {
+            for (DocumentListener documentListener : documentListeners) {
+                documentListener.deleted(document);
+            }
+        }
+        this.solrService.delete(document);
+        return new DocumentResponse(document);
+    }
+
     @PostMapping("/task")
     @ResponseStatus(HttpStatus.CREATED)
     public TaskDocumentResponse createNewTask(@RequestBody DocumentUpload document) {

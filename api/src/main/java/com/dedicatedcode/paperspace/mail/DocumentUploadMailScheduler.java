@@ -2,6 +2,7 @@ package com.dedicatedcode.paperspace.mail;
 
 import com.dedicatedcode.paperspace.model.Document;
 import com.dedicatedcode.paperspace.model.DocumentListener;
+import com.dedicatedcode.paperspace.model.TaskDocument;
 import com.dedicatedcode.paperspace.web.DocumentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,5 +58,11 @@ public class DocumentUploadMailScheduler implements DocumentListener {
                         LocalDateTime.now(),
                         recipient,
                         attachments), messageIdentifier);
+    }
+
+    @Override
+    public void deleted(Document document) {
+        String messageIdentifier = "DOCUMENT_CREATED_" + document.getId();
+        this.messageService.getScheduledMessageBy(messageIdentifier).forEach(messageService::deleteMessage);
     }
 }
