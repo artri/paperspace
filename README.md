@@ -62,18 +62,18 @@ There is also a minimal docker-compose file where only the options needed are se
     
 ### example docker stacks
 
-####complete stack including all available configuration options
+#### complete stack including all available configuration options
 This stack deploys the whole application (api,feeder,search and database). Use this if you have already a way to drop files into the watched folders.
 
 [docker-compose.yml](https://gitlab.com/dedicatedcode/paperspace/-/blob/master/deployment/examples/docker-compose.yml)
 
-####minimal stack
+#### minimal stack
 This stack deploys the whole application (api,feeder,search and database). But with only the bare minimum of required configuration options.
 This stack does not send emails on an upload of a document. It also does not send reminder emails. 
 
 [docker-compose.yml](https://gitlab.com/dedicatedcode/paperspace/-/blob/master/deployment/examples/minimal-docker-compose.yml)
 
-####stack including a preconfigured ftp server
+#### stack including a preconfigured ftp server
 This stack comes with a ftp server which listens on port 21 incl. PASV support. 
 You can either upload documents or tasks directly via ftp or setup your document scanner to upload the scanned PDF´s in the appropriate folders.
 
