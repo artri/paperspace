@@ -11,12 +11,3 @@ Welcome to paper{s}pace's documentation!
    :caption: Contents:
 
    contents
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
