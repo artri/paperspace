@@ -2,7 +2,10 @@
 
 a small web application to manage all your offline documents. 
 Provides a searchable storage for your documents and reminds you of upcoming tasks.
- 
+
+![screenshot of the start page](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/5c02cb86506303adacbd1fb3bbf6decc/screenshot-2020-06-06-05_29_57.png)
+
+More screenshots of the current state can be found in the [wiki](https://gitlab.com/dedicatedcode/paperspace/-/wikis/Screenshots)
 ## Introduction
 what can it do:
 - provides a searchable storage for your documents 
