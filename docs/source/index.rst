@@ -10,6 +10,8 @@ Welcome to paper{s}pace's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   contents
+
 
 
 Indices and tables
