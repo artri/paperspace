@@ -119,11 +119,11 @@ You can change the username, password and database name but have to adjust the c
 
    If you have adjusted the paths in the application.properties you have to make sure all paths are existing and writable to the feeder and the application. You can execute the following command to create the default paths.
    ```shell script
-   sudo mkdir -p /data/{input,ignored,errors,processed}/{tasks,documents}
+   sudo mkdir -p /data/{input,ignored,error,processed}/{tasks,documents}
    sudo mkdir -p /binary
    
    sudo chown -R paperspace:paperspace /data/input
-   sudo chown -R paperspace:paperspace /data/errors
+   sudo chown -R paperspace:paperspace /data/error
    sudo chown -R paperspace:paperspace /data/ignored
    sudo chown -R paperspace:paperspace /data/processed
    sudo chown -R paperspace:paperspace /binary
