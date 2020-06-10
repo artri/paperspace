@@ -107,7 +107,54 @@ You can change the username, password and database name but have to adjust the c
     ```shell script
     sudo nano /opt/paperspace-feeder/application.properties
     ```
- 
+    Here are my versions of the application.properties 
+    
+    **/opt/paperspace-feeder/application.properties**
+    ```properties
+   feeder.api.host=http://localhost:8080
+   feeder.documents.input=${DOCUMENT_INPUT:/data/input/documents}
+   feeder.documents.ignored=${DOCUMENT_IGNORED:/data/ignored/documents}
+   feeder.documents.error=${DOCUMENT_ERROR:/data/error/documents}
+   feeder.documents.processed=${DOCUMENT_PROCESSED:/data/processed/documents}
+   feeder.documents.moveToProcessed=${DOCUMENT_BACKUP:false}
+   feeder.tasks.input=${TASK_INPUT:/data/input/tasks}
+   feeder.tasks.ignored=${TASK_IGNORED:/data/ignored/tasks}
+   feeder.tasks.error=${TASK_ERROR:/data/error/tasks}
+   feeder.tasks.processed=${TASK_PROCESSED:/data/processed/tasks}
+   feeder.tasks.moveToProcessed=${TASK_BACKUP:false}
+   feeder.ocr.datapath=/usr/share/tesseract-ocr/4.00/tessdata
+   feeder.ocr.language=${OCR_LANGUAGE:deu}
+    ```
+    **/opt/paperspace-app/application.properties**
+   ```properties
+   spring.thymeleaf.cache=true
+   app.host=http://192.168.122.103:8080
+   database.host=localhost
+   database.port=3306
+   database.table=paperspace
+   database.user=paperspace
+   database.password=paperspace
+   search.host=localhost
+   search.port=8983
+   spring.datasource.url=jdbc:mariadb://${database.host}:${database.port}/${database.table}?useSSL=false&useUnicode=true&characterEncoding=utf-8
+   spring.datasource.username=${database.user}
+   spring.datasource.password=${database.password}
+   spring.data.solr.host=http://${search.host}:${search.port}/solr/documents
+   storage.local.binary=${STORAGE_PATH:/binary}
+   task.defaultDuePeriod=14
+   email.enabled=${ENABLE_MAIL:false}
+   email.target-address=${MAIL_TO_ADDRESS:}
+   email.sender-address=${MAIL_FROM_ADDRESS:}
+   email.attach_documents=${MAIL_ATTACH_DOCUMENTS:false}
+   spring.mail.host=${MAILING_HOST:}
+   spring.mail.port=${MAILING_PORT:587}
+   spring.mail.protocol=${MAILING_PROTOCOL:smtp}
+   spring.mail.test-connection=false
+   spring.mail.properties.mail.smtp.auth=${MAILING_SMTP_AUTH:true}
+   spring.mail.properties.mail.smtp.starttls.enable=${MAILING_SMTP_USE_STARTTLS:true}
+   spring.mail.username=${MAILING_USERNAME:}
+   spring.mail.password=${MAILING_PASSWORD:}
+   ```
 7. adjust config for api
     ```shell script
     sudo nano /opt/paperspace-app/application.properties
