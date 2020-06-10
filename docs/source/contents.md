@@ -8,7 +8,7 @@ For a dockerized installation please follow the [README](https://gitlab.com/dedi
 This installation assumes a system running Ubuntu 20.04 LTS. For other systems please adapt accordingly.
 
 ##### prerequisites
-You need following applications installed on your the host.
+You need following applications installed on the host.
 * git
 * maven
 * openjdk-11
