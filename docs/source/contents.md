@@ -74,13 +74,16 @@ You can change the username, password and database name but have to adjust the c
     ```
 4. copy executables
    ```shell script
-   sudo cp feeder/target/feeder.jar /opt/paperspace-feeder/
-   sudo cp api/target/feeder.jar /opt/paperspace-app/
+   sudo cp feeder/target/feeder.jar /opt/paperspace-feeder/feeder.jar
+   sudo cp api/target/api.jar /opt/paperspace-app/app.jar
    ```
 5. copy and adjust application.properties
     ```shell script
     sudo cp feeder/src/main/resources/application-docker.properties /opt/paperspace-feeder/application.properties
     sudo cp api/src/main/resources/application-docker.properties /opt/paperspace-app/application.properties
+   
+    sudo chown -R paperspace:paperspace /opt/paperspace-feeder
+    sudo chown -R paperspace:paperspace /opt/paperspace-app
     ```
    After this you should have the opt folder populatet like this:
    ```shell script
@@ -101,7 +104,7 @@ You can change the username, password and database name but have to adjust the c
     ```shell script
     sudo nano /opt/paperspace-feeder/application.properties
     ```
-
+ 
 7. adjust config for api
     ```shell script
     sudo nano /opt/paperspace-app/application.properties
@@ -109,6 +112,20 @@ You can change the username, password and database name but have to adjust the c
    An explanation of every key can also be found in the [README](https://gitlab.com/dedicatedcode/paperspace#docker-configuration).
    If you enable emailing please make sure the properties starting with mailing are set.
    
+7. create folders for feeder and app
+
+   If you have adjusted the paths in the application.properties you have to make sure all paths are existing and writable to the feeder and the application. You can execute the following command to create the default paths.
+   ```shell script
+   sudo mkdir -p /data/{input,ignored,errors,processed}/{tasks,documents}
+   sudo mkdir -p /binary
+   
+   sudo chown -R paperspace:paperspace /data/input
+   sudo chown -R paperspace:paperspace /data/errors
+   sudo chown -R paperspace:paperspace /data/ignored
+   sudo chown -R paperspace:paperspace /data/processed
+   sudo chown -R paperspace:paperspace /binary
+   ```
+
 8. create service files
     ```shell script
     sudo tee <<EOF /etc/systemd/system/paperspace-feeder.service >/dev/null
@@ -133,7 +150,7 @@ You can change the username, password and database name but have to adjust the c
    
    [Service]
    User=paperspace
-   ExecStart=/opt/paperspace-app/api.jar
+   ExecStart=/opt/paperspace-app/app.jar
    SuccessExitStatus=143
     
    [Install]
@@ -145,9 +162,14 @@ You can change the username, password and database name but have to adjust the c
    ```shell script
    sudo systemctl daemon-reload
    ```
-   
-   9. start services
+
+9. start services
    ```shell script
     sudo systemctl enable paperspace-feeder
-    sudo systemctl enable paperspace-app
-```
+    sudo systemctl enable paperspace-app 
+    sudo systemctl start paperspace-feeder
+    sudo systemctl start paperspace-app
+    ```
+   
+   If everything is set up the app should be now accessible over http://localhost:8080 and should you greet with an empty result.
+   You can start throwing PDFs into the documents or task folder now.
