@@ -37,6 +37,9 @@ Inspired by
 the easiest solution is to adjust the provided docker-compose file and deploy the whole stack.
 It is also possible to build booth applications and deploy them on a server or locally.
 
+### source
+
+A detailed explanation how to install the application from the source on a Ubuntu Server can be found at [Documentation](https://paperspace.readthedocs.io/en/latest/contents.html#bare-metal-installation-from-source)
 ### docker
  
 1. checkout the project
