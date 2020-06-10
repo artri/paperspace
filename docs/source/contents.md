@@ -1,7 +1,7 @@
 ### Installation
 #### Docker
 
-For a dockerized installation please follow one of the examples in
+For a dockerized installation please follow the [README](https://gitlab.com/dedicatedcode/paperspace#deployment) and one of the examples in
 [examples](https://gitlab.com/dedicatedcode/paperspace/-/tree/master/deployment/examples)
 
 #### Bare Metal Installation from Source
