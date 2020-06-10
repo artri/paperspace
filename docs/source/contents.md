@@ -46,7 +46,10 @@ copy solr configuration
 ```shell script
 sudo cp -r paperspace/search/config/conf /var/solr/data/core_documents
 ```
-
+restart solr
+```shell script
+sudo systemctl restart solr.service
+```
 ###### Create database
 
 login into MariaDB and create Database and user for paper{s}pace.
