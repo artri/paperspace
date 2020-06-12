@@ -7,19 +7,35 @@ function SearchController(config) {
             const query = getParameterByName('q', window.history.state.url);
             if (query) {
                 $(configuration.input).val(query);
+            } else {
+                $(configuration.input).val('');
             }
-            search(window.history.state.url);
+            search(window.history.state.url, false);
         } else {
             $(configuration.input).val('');
-            search('/search');
+            search('/search', false);
+        }
+        updateClearButtonState();
+    }
+
+    function updateClearButtonState() {
+        if ($(configuration.input).val() === '') {
+            $('#clear-search-button').hide();
+        } else {
+            $('#clear-search-button').show();
         }
     }
 
     this.init = function () {
         $(window).on('popstate', function () {
-            console.log(window.history.state);
+            console.log('pop history state ' + JSON.stringify(history.state))
             initializeSearchField();
         });
+        $('#clear-search-button').on('click', function () {
+            $(configuration.input).val(null);
+            search('/search', true);
+            updateClearButtonState();
+        })
         $(configuration.input).on('input', function (event) {
             if (timerId !== -1) {
                 window.clearTimeout(timerId);
@@ -28,7 +44,8 @@ function SearchController(config) {
                 showLoader();
                 let query = $(configuration.input).val();
                 let url = '/search' + (query !== '' ? '?q=' + query : '');
-                search(url)
+                updateClearButtonState();
+                search(url, true)
             }, configuration.timeout);
         })
         console.log(JSON.stringify(window.history.state));
@@ -189,16 +206,15 @@ function SearchController(config) {
         return decodeURIComponent(results[2].replace(/\+/g, ' '));
     }
 
-    function search(url) {
+    function search(url, safeHistory) {
         const query = getParameterByName('q', url);
         const page = getParameterByName('page', url);
+        if (safeHistory) {
+            console.log('push history state ' + JSON.stringify({url: url, query: query, page: page}))
+            window.history.pushState({url: url, query: query, page: page}, null, '/');
+        }
 
         $.get(url).done((data) => {
-            if (window.history.state) {
-                window.history.replaceState({url: url, query: query, page: page}, null);
-            } else if (query || page) {
-                window.history.pushState({url: url, query: query, page: page}, null);
-            }
             $(configuration.resultsPanel).html('');
             if (data.results > 0) {
                 if (data.items.length > 0) {

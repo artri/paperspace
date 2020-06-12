@@ -21,23 +21,21 @@
         </div>
         <div class="col-8 align-items-center">
             <div class="input-group input-group-sm">
-                <input aria-describedby="search-input-button" aria-label="Search everything" class="form-control"
-                       id="search-input"
-                       placeholder="search everything" type="text">
+                <input aria-describedby="search-input-button" aria-label="Search everything" class="form-control border border-right-0 shadow-none" id="search-input" placeholder="search everything" type="text"/>
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" id="search-input-button">
-                        <svg class="bi bi-search" fill="currentColor" height="1em" viewBox="0 0 16 16" width="1em"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path clip-rule="evenodd"
-                                  d="M10.442 10.442a1 1 0 011.415 0l3.85 3.85a1 1 0 01-1.414 1.415l-3.85-3.85a1 1 0 010-1.415z"
-                                  fill-rule="evenodd"/>
-                            <path clip-rule="evenodd"
-                                  d="M6.5 12a5.5 5.5 0 100-11 5.5 5.5 0 000 11zM13 6.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"
-                                  fill-rule="evenodd"/>
+                    <button class="btn btn-outline-secondary border-right-0 border-left-0 border" type="button" style="display: none" id="clear-search-button">
+                        <svg class="bi bi-x" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z"></path>
+                            <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z"></path>
                         </svg>
-                    </button>
-                </div>
-            </div>
+                    </button></div><div class="input-group-append">
+                <button class="btn border btn-outline-secondary" id="search-input-button">
+                    <svg class="bi bi-search" fill="currentColor" height="1em" viewBox="0 0 16 16" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path clip-rule="evenodd" d="M10.442 10.442a1 1 0 011.415 0l3.85 3.85a1 1 0 01-1.414 1.415l-3.85-3.85a1 1 0 010-1.415z" fill-rule="evenodd"></path>
+                        <path clip-rule="evenodd" d="M6.5 12a5.5 5.5 0 100-11 5.5 5.5 0 000 11zM13 6.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" fill-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div></div>
         </div>
     </div>
 </header>
