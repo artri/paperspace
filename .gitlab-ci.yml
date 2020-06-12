@@ -49,6 +49,9 @@ copy-artifacts:
   stage: release
   image: alpine:3.9
   script:
+    - export LC_ALL=en_US.UTF-8
+    - export LANG=en_US.UTF-8
+    - apk add py-pip unzip curl autoconf libtool automake bash lcms2-dev
     - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
     - unzip awscli-bundle.zip
     - ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
