@@ -42,6 +42,8 @@ docker-latest:
     - docker push dedicatedcode/paperspace:latest
     - docker push dedicatedcode/paperspace-search:latest
     - docker push dedicatedcode/paperspace-feeder:latest
+  except:
+    - tags
 
 copy-artifacts:
   stage: release
@@ -61,6 +63,8 @@ copy-artifacts:
 docker-release:
   stage: release
   image: docker:19.03.11
+  dependencies:
+    - copy-artifacts
   services:
     - docker:dind
   before_script:
