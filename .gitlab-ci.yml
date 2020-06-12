@@ -59,7 +59,7 @@ copy-artifacts:
     - aws configure set aws_secret_access_key $AWS_SECRET
     - mkdir -p tmp/paperspace-app && cp api/target/api.jar tmp/paperspace-app/app.jar
     - mkdir -p tmp/paperspace-feeder && cp feeder/target/feeder.jar tmp/paperspace-feeder/feeder.jar
-    - cd tmp/ && tar czf paperspace-$CI_COMMIT_TAG.tgz && cd ..
+    - cd tmp/ && tar -zcvf paperspace-$CI_COMMIT_TAG.tgz paperspace-app paperspace-feeder && cd ..
     - aws s3 cp tmp/paperspace-$CI_COMMIT_TAG.tgz s3://$BUCKET_NAME/paperspace-$CI_COMMIT_TAG.tgz
   only:
     - tags
