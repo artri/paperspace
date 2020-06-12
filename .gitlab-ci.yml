@@ -31,7 +31,11 @@ docker-latest:
     - docker:dind
   before_script:
     - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
   script:
     - docker build -t dedicatedcode/paperspace-search:latest search/
     - docker build -t dedicatedcode/paperspace-feeder:latest feeder/
     - docker build -t dedicatedcode/paperspace:latest api/
+    - docker push dedicatedcode/paperspace:latest
+    - docker push dedicatedcode/paperspace-search:latest
+    - docker push dedicatedcode/paperspace-feeder:latest
