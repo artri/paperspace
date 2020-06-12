@@ -59,7 +59,7 @@ public class DocumentController {
         TaskDocument updated = document.withState(State.DONE).withDoneAt(LocalDateTime.now());
         this.documentService.update(updated);
         for (TaskDocumentListener taskListener : taskListeners) {
-            taskListener.changed(document,updated);
+            taskListener.changed(document, updated);
         }
         this.solrService.index(updated);
         return new TaskDocumentResponse(updated);
@@ -72,8 +72,11 @@ public class DocumentController {
             throw new UnknownPageException("unable to find document with id [" + id + "]");
         }
         if (document instanceof TaskDocument) {
-            LocalDateTime dueValue = dueDate != null && !dueDate.equals("") ? LocalDate.parse(dueDate, DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay() : null;
-            TaskDocument task = ((TaskDocument) document).withDueAt(dueValue).withTitle(title).withDescription(description);
+            TaskDocument task = ((TaskDocument) document).withTitle(title).withDescription(description);
+            if (task.getState() != State.DONE) {
+                LocalDateTime dueValue = dueDate != null && !dueDate.equals("") ? LocalDate.parse(dueDate, DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay() : null;
+                task = task.withDueAt(dueValue);
+            }
             this.documentService.update(task);
             for (TaskDocumentListener taskListener : taskListeners) {
                 taskListener.changed((TaskDocument) document, task);

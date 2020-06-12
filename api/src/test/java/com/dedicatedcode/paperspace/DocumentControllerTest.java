@@ -4,6 +4,8 @@ import com.dedicatedcode.paperspace.mail.JdbcMessageService;
 import com.dedicatedcode.paperspace.mail.Message;
 import com.dedicatedcode.paperspace.mail.MessageState;
 import com.dedicatedcode.paperspace.model.Binary;
+import com.dedicatedcode.paperspace.model.Document;
+import com.dedicatedcode.paperspace.model.TaskDocument;
 import com.dedicatedcode.paperspace.search.SolrService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -48,6 +51,9 @@ class DocumentControllerTest {
 
     @MockBean
     private SolrService solrService;
+
+    @Autowired
+    private DocumentService documentService;
 
     private MockMvc mockMvc;
 
@@ -162,6 +168,42 @@ class DocumentControllerTest {
         assertTrue(message.getBody().contains("open document"));
         assertEquals(binaryId, message.getAttachments().get(0).getId());
     }
+
+    @Test
+    public void shouldNotResetDueDateOnDone() throws Exception {
+        UUID binaryId = storeBinary().getId();
+
+        DocumentController.DocumentUpload upload = new DocumentController.DocumentUpload();
+        upload.setTitle("Test : Document öäü");
+        upload.setBinaryId(binaryId);
+
+        AtomicReference<UUID> uuidAtomicReference = new AtomicReference<>();
+        mockMvc.perform(post("/task")
+                .content(objectMapper.writeValueAsString(upload))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(201))
+                .andDo(result -> {
+                    JsonNode node = objectMapper.readTree(result.getResponse().getContentAsString());
+                    uuidAtomicReference.set(UUID.fromString(node.get("id").asText()));
+                });
+
+        TaskDocument document = (TaskDocument) documentService.getDocument(uuidAtomicReference.get());
+        mockMvc.perform(post("/task/{id}/done", uuidAtomicReference.get()))
+                .andExpect(status().is(200));
+
+        mockMvc.perform(post("/task/{id}",uuidAtomicReference.get())
+                .param("title", "Updated Title")
+                .param("description", "Updated Description"))
+                .andExpect(status().is(200))
+                .andDo(result -> {
+                    JsonNode node = objectMapper.readTree(result.getResponse().getContentAsString());
+                    uuidAtomicReference.set(UUID.fromString(node.get("id").asText()));
+                });
+        LocalDateTime oldDueDate = document.getDueAt();
+        LocalDateTime newDueDate = ((TaskDocument) documentService.getDocument(uuidAtomicReference.get())).getDueAt();
+        assertEquals(oldDueDate, newDueDate);
+    }
+
     @Test
     void shouldSendMessageOnNewTask() throws Exception {
         UUID binaryId = storeBinary().getId();
@@ -174,7 +216,6 @@ class DocumentControllerTest {
         mockMvc.perform(post("/task")
                 .content(objectMapper.writeValueAsString(upload))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().is(201))
                 .andDo(result -> {
                     JsonNode node = objectMapper.readTree(result.getResponse().getContentAsString());
@@ -217,7 +258,6 @@ class DocumentControllerTest {
                 .file(file)
                 .param("mimeType", "application/pdf"))
                 .andExpect(status().is(201))
-                .andDo(print())
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.createdAt", notNullValue()))
                 .andExpect(jsonPath("$.originalFileName", is("Test File.pdf")))
