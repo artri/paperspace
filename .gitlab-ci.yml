@@ -66,8 +66,6 @@ copy-artifacts:
 docker-release:
   stage: release
   image: docker:19.03.11
-  dependencies:
-    - copy-artifacts
   services:
     - docker:dind
   before_script:
