@@ -7,7 +7,7 @@ stages:
 build-api:
   stage: build
   before_script:
-    - chmod u+x api/mvnv
+    - chmod u+x api/mvnw
   script:
     - cd api && ./mvnw package
   artifacts:
@@ -17,7 +17,7 @@ build-api:
 build-feeder:
   stage: build
   before_script:
-    - chmod u+x feeder/mvnv
+    - chmod u+x feeder/mvnw
   script:
     - cd feeder && ./mvnw package
   artifacts:
