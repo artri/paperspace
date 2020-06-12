@@ -1,0 +1,25 @@
+image: openjdk:14
+
+stages:
+  - build
+  - deploy
+
+build-api:
+  stage: build
+  before_script:
+    - chmod u+x api/mvnv
+  script:
+    - cd api && ./mvnw package
+  artifacts:
+    paths:
+      - api/target/api.jar
+
+build-feeder:
+  stage: build
+  before_script:
+    - chmod u+x feeder/mvnv
+  script:
+    - cd feeder && ./mvnw package
+  artifacts:
+    paths:
+      - feeder/target/feeder.jar
