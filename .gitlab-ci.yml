@@ -27,6 +27,8 @@ build-feeder:
 docker-latest:
   stage: deploy
   image: docker:19.03.11
+  services:
+    - docker:dind
   before_script:
     - docker info
   script:
