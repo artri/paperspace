@@ -72,7 +72,7 @@ public class DocumentController {
             throw new UnknownPageException("unable to find document with id [" + id + "]");
         }
         if (document instanceof TaskDocument) {
-            LocalDateTime dueValue = !dueDate.equals("") ? LocalDate.parse(dueDate, DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay() : null;
+            LocalDateTime dueValue = dueDate != null && !dueDate.equals("") ? LocalDate.parse(dueDate, DateTimeFormatter.ofPattern("dd.MM.yyyy")).atStartOfDay() : null;
             TaskDocument task = ((TaskDocument) document).withDueAt(dueValue).withTitle(title).withDescription(description);
             this.documentService.update(task);
             for (TaskDocumentListener taskListener : taskListeners) {
@@ -91,7 +91,7 @@ public class DocumentController {
     }
 
     @DeleteMapping({"/document/{id}", "/task/{id}",})
-    public DocumentResponse deleteDocument(@PathVariable UUID id, @RequestParam(required = false) String title, @RequestParam(required = false) String description, @RequestParam(required = false) String dueDate) {
+    public DocumentResponse deleteDocument(@PathVariable UUID id) {
         Document document = this.documentService.getDocument(id);
         if (document == null) {
             throw new UnknownPageException("unable to find document with id [" + id + "]");
