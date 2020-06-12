@@ -42,7 +42,6 @@ docker-latest:
     - docker push dedicatedcode/paperspace:latest
     - docker push dedicatedcode/paperspace-search:latest
     - docker push dedicatedcode/paperspace-feeder:latest
-    - feeder/target/feeder.jar
 
 copy-artifacts:
   stage: release
