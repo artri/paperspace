@@ -23,3 +23,13 @@ build-feeder:
   artifacts:
     paths:
       - feeder/target/feeder.jar
+
+docker-latest:
+  stage: deploy
+  image: docker:19.03.11
+  before_script:
+    - docker info
+  script:
+    - docker build -t dedicatedcode/paperspace-search:latest search/
+    - docker build -t dedicatedcode/paperspace-feeder:latest feeder/
+    - docker build -t dedicatedcode/paperspace:latest api/
