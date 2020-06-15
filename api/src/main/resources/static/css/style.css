@@ -204,3 +204,14 @@ html {
     background: #535e68;
     color: #ffecc8;
 }
+
+@media (min-width: 768px) {
+    .preview-image {
+        max-height: 17rem;
+    }
+
+    .item {
+        height: 18rem;
+        max-height: 18rem;
+    }
+}

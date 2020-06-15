@@ -87,14 +87,14 @@ function SearchController(config) {
             <div class="row">
                 <div class="col-md-6 px-0 text-muted">${element.createdAt}</div>
                 <div class="col-md-8 px-0">
-                    <h1 class="font-italic text-lowercase">
+                    <h1 class="font-italic text-lowercase text-truncate">
                         ${icon}           
                         ${element.title}
                     </h1>
                     <p class="lead text-muted">${trimContent(element.previewText)}</p>
                     <p class="lead mb-0"><a href="${element.links.self}" class="text-white font-weight-bold stretched-link">open ...</a></p>
                 </div>
-                <div class="col-md-4 d-flex justify-content-end">
+                <div class="col-md-4 text-right">
                     <img src="${previewLink}" alt="" class="img-fluid">
                 </div>
             </div>
@@ -108,9 +108,9 @@ function SearchController(config) {
             let icon = renderIcon(element);
             result += `
             <div class="col-md-6">
-                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative item">
                     <div class="col-md-7 p-4 d-flex flex-column position-static">
-                        <h3 class="text-lowercase">
+                        <h3 class="text-lowercase text-truncate">
                             ${icon}
                             ${element.title}
                         </h3>
@@ -118,7 +118,7 @@ function SearchController(config) {
                         <p class="card-text small text-muted">${trimContent(element.previewText)}</p>
                         <a href="${element.links.self}" class="stretched-link">open ...</a>
                     </div>
-                    <div class="col-md-5 p-2">
+                    <div class="col-md-5 p-2 text-right">
                      <img src="${previewLink}" alt="" class="img-thumbnail preview-image">
                     </div>
                 </div>
