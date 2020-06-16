@@ -43,7 +43,7 @@ function SearchController(config) {
             timerId = window.setTimeout(function () {
                 showLoader();
                 let query = $(configuration.input).val();
-                let url = '/search' + (query !== '' ? '?q=' + query : '');
+                let url = '/search' + (query !== '' ? '?q=' + encodeURIComponent(query) : '');
                 updateClearButtonState();
                 search(url, true)
             }, configuration.timeout);

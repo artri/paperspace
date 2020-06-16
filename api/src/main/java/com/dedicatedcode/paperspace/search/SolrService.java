@@ -26,11 +26,13 @@ public class SolrService {
     private static final Logger log = LoggerFactory.getLogger(SolrService.class);
     private final SolrClient solrClient;
     private final DocumentService documentService;
+    private final SolrQueryBuilder queryBuilder;
 
     @Autowired
-    public SolrService(SolrClient solrClient, DocumentService documentService) {
+    public SolrService(SolrClient solrClient, DocumentService documentService, SolrQueryBuilder queryBuilder) {
         this.solrClient = solrClient;
         this.documentService = documentService;
+        this.queryBuilder = queryBuilder;
     }
 
     public SearchResponse recent(int page, int maxResults) {
@@ -39,7 +41,7 @@ public class SolrService {
 
     public SearchResponse query(String queryString, int page, int maxResults) {
 
-        SolrQuery query = queryString != null ? new SolrQuery("title:*" + queryString + "*^10 OR description:*" + queryString + "*^5 OR content:*" + queryString + "*^2") : new SolrQuery("*:*");
+        SolrQuery query = new SolrQuery(this.queryBuilder.build(queryString));
         query.setSort("createdAt", SolrQuery.ORDER.desc);
         query.setRows(maxResults);
         if (queryString != null) {

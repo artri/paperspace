@@ -1,7 +1,8 @@
 version: "3"
 services:
   search:
-    image: dedicatedcode/paperspace-search:latest
+    build:
+      context: ../search
     restart: unless-stopped
     volumes:
       - ../data/solr:/data/solr
