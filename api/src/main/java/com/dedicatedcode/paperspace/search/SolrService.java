@@ -23,10 +23,11 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.dedicatedcode.paperspace.search.SolrVersionService.SUPPORTED_SCHEMA_VERSION;
+
 @Service
 public class SolrService {
     private static final Logger log = LoggerFactory.getLogger(SolrService.class);
-    private static final int DOCUMENT_SCHEMA = 1;
 
     private final SolrClient solrClient;
     private final DocumentService documentService;
@@ -119,7 +120,7 @@ public class SolrService {
             solrInput.addField("createdAt", new Date(document.getCreatedAt().toInstant(ZoneOffset.UTC).toEpochMilli()));
             solrInput.addField("description", document.getDescription());
             solrInput.addField("documentType", document instanceof TaskDocument ? "TASK" : "DOCUMENT");
-            solrInput.addField("_schema_version_", DOCUMENT_SCHEMA);
+            solrInput.addField("_schema_version_", SUPPORTED_SCHEMA_VERSION);
             solrInput.addField("content", document.getContent());
 
             this.solrClient.add(solrInput);

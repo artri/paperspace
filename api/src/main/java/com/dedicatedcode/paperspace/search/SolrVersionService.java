@@ -20,7 +20,7 @@ public class SolrVersionService {
         TO_NEW
     }
 
-    static final int SUPPORTED_SCHEMA_VERSION = 2;
+    static final int SUPPORTED_SCHEMA_VERSION = 6;
     private final SolrClient solrClient;
 
     public SolrVersionService(SolrClient solrClient) {

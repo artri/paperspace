@@ -305,11 +305,27 @@ function DocumentController(config) {
 }
 
 function StatusController() {
+    const toastTemplate = `
+    <div id="solrReindexNotification" class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true"
+         style="position: fixed;bottom: 8px;right: 8px; z-index: 10;">
+        <div class="toast-header">
+            <strong class="mr-auto text-danger">Update</strong>
+            <small class="text-muted"></small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            <p>Stored documents have to be updated that the search can work correct.</p>
+            <p>
+                <button class="btn btn-outline-secondary ladda-button" data-spinner-color="#6c757d"
+                        data-style="expand-left" id="solrReindexButton">update
+                </button>
+            </p>
+        </div>
+    </div>`;
+
     this.init = function () {
-        var reindexButton = document.getElementById('solrReindexButton');
-        var reindexLadda = Ladda.create(reindexButton);
-        $('#solrReindexNotification').toast({autohide: false})
-        $('#solrReindexNotification').toast('hide')
 
         $.get('/status').done(data => {
             if (data.data === 'NEEDS_UPGRADE') {
@@ -317,22 +333,28 @@ function StatusController() {
             }
         });
 
+    }
+
+    function showReindexNotification() {
+        $(toastTemplate).appendTo(document.body);
+        $('.toast').toast({autohide: false})
+        $('.toast').toast('show')
+
+        var reindexButton = document.getElementById('solrReindexButton');
+        var reindexLadda = Ladda.create(reindexButton);
+
         $('#solrReindexButton').on('click', ev => {
             reindexLadda.start();
             $.post('/reindex')
                 .done(() => {
                     reindexButton.setAttribute('disabled', 'disabled');
                     reindexButton.textContent = 'Update finished.'
-                    window.setTimeout(()=> $('#solrReindexNotification').toast('hide'), 5000);
+                    window.setTimeout(() => $('#solrReindexNotification').toast('hide'), 5000);
                 })
-                .always(()=> {
-                reindexLadda.stop();
+                .always(() => {
+                    reindexLadda.stop();
 
-            })
+                })
         })
-    }
-    
-    function showReindexNotification() {
-        $('#solrReindexNotification').toast('show')
     }
 }
