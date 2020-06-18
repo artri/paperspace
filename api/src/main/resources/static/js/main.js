@@ -1,5 +1,5 @@
 function SearchController(config) {
-    let configuration = config;
+    const configuration = config;
     let timerId = -1;
 
     function initializeSearchField() {
@@ -48,7 +48,6 @@ function SearchController(config) {
                 search(url, true)
             }, configuration.timeout);
         })
-        console.log(JSON.stringify(window.history.state));
         initializeSearchField();
     }
 
@@ -255,7 +254,7 @@ function SearchController(config) {
 }
 
 function DocumentController(config) {
-    let configuration = config;
+    const configuration = config;
 
     this.init = function () {
         var saveLadda = Ladda.create(document.querySelector(configuration.saveButton));
@@ -302,5 +301,38 @@ function DocumentController(config) {
             });
             return false;
         })
+    }
+}
+
+function StatusController() {
+    this.init = function () {
+        var reindexButton = document.getElementById('solrReindexButton');
+        var reindexLadda = Ladda.create(reindexButton);
+        $('#solrReindexNotification').toast({autohide: false})
+        $('#solrReindexNotification').toast('hide')
+
+        $.get('/status').done(data => {
+            if (data.data === 'NEEDS_UPGRADE') {
+                showReindexNotification();
+            }
+        });
+
+        $('#solrReindexButton').on('click', ev => {
+            reindexLadda.start();
+            $.post('/reindex')
+                .done(() => {
+                    reindexButton.setAttribute('disabled', 'disabled');
+                    reindexButton.textContent = 'Update finished.'
+                    window.setTimeout(()=> $('#solrReindexNotification').toast('hide'), 5000);
+                })
+                .always(()=> {
+                reindexLadda.stop();
+
+            })
+        })
+    }
+    
+    function showReindexNotification() {
+        $('#solrReindexNotification').toast('show')
     }
 }

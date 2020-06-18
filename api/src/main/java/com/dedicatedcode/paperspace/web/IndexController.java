@@ -6,6 +6,7 @@ import com.dedicatedcode.paperspace.model.State;
 import com.dedicatedcode.paperspace.model.TaskDocument;
 import com.dedicatedcode.paperspace.model.TaskDocumentListener;
 import com.dedicatedcode.paperspace.search.SolrService;
+import com.dedicatedcode.paperspace.search.SolrVersionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -22,19 +23,27 @@ public class IndexController {
     private final DocumentService documentService;
     private final List<TaskDocumentListener> taskListeners;
     private final SolrService solrService;
+    private final SolrVersionService solrVersionService;
     private final String appHost;
 
     @Autowired
-    public IndexController(DocumentService documentService, List<TaskDocumentListener> taskListeners, SolrService solrService, @Value("${app.host}") String appHost) {
+    public IndexController(DocumentService documentService, List<TaskDocumentListener> taskListeners, SolrService solrService, SolrVersionService solrVersionService, @Value("${app.host}") String appHost) {
         this.documentService = documentService;
         this.taskListeners = taskListeners;
         this.solrService = solrService;
+        this.solrVersionService = solrVersionService;
         this.appHost = appHost;
     }
 
     @RequestMapping("/")
     public String loadIndexPage() {
         return "index";
+    }
+
+    @RequestMapping("/status") 
+    @ResponseBody
+    public Status loadStatus() {
+        return new Status(this.solrVersionService.needsReindexing());
     }
 
     @RequestMapping({"/task/{id}", "/document/{id}"})
@@ -74,5 +83,17 @@ public class IndexController {
     @ResponseBody
     public String handleNotFound(UnknownPageException ex) {
         return ex.getMessage();
+    }
+
+    private static class Status {
+        private final String data;
+
+        private Status(SolrVersionService.Status data) {
+            this.data = data.name();
+        }
+
+        public String getData() {
+            return data;
+        }
     }
 }

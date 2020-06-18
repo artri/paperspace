@@ -11,6 +11,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class SolrService {
     private static final Logger log = LoggerFactory.getLogger(SolrService.class);
+    private static final int DOCUMENT_SCHEMA = 1;
+
     private final SolrClient solrClient;
     private final DocumentService documentService;
     private final SolrQueryBuilder queryBuilder;
@@ -109,7 +113,16 @@ public class SolrService {
 
     public void index(Document document) {
         try {
-            this.solrClient.addBean(new SolrDocumentWrapper(document));
+            SolrInputDocument solrInput = new SolrInputDocument();
+            solrInput.addField("id", document.getId().toString());
+            solrInput.addField("title", document.getTitle());
+            solrInput.addField("createdAt", new Date(document.getCreatedAt().toInstant(ZoneOffset.UTC).toEpochMilli()));
+            solrInput.addField("description", document.getDescription());
+            solrInput.addField("documentType", document instanceof TaskDocument ? "TASK" : "DOCUMENT");
+            solrInput.addField("_schema_version_", DOCUMENT_SCHEMA);
+            solrInput.addField("content", document.getContent());
+
+            this.solrClient.add(solrInput);
             log.debug("indexed document [{}] into solr", document.getId());
         } catch (IOException | SolrServerException e) {
             throw new RuntimeException("Unable to store document in search", e);
