@@ -43,8 +43,8 @@ public class PDFDocumentHandler extends FileSizeCheckingTask {
     private static final Gson GSON = new GsonBuilder().create();
     private static final double MINIMUM_DESKEW_THRESHOLD = 0.05d;
 
-    public PDFDocumentHandler(File file, InputType inputType, AppConfiguration configuration) {
-        super(file, inputType, configuration);
+    public PDFDocumentHandler(File file, InputType inputType, AppConfiguration configuration, ApiAvailabilityService availabilityService) {
+        super(file, inputType, configuration, availabilityService);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.dedicatedcode.paperspace.feeder.tasks;
 
 import com.dedicatedcode.paperspace.feeder.FileStatus;
 import com.dedicatedcode.paperspace.feeder.InputType;
+import com.dedicatedcode.paperspace.feeder.configuration.ApiConfiguration;
 import com.dedicatedcode.paperspace.feeder.configuration.AppConfiguration;
 import com.dedicatedcode.paperspace.feeder.configuration.DocumentConfiguration;
 import org.assertj.core.util.Files;
@@ -89,6 +90,8 @@ class FileSizeCheckingTaskTest {
     void shouldMoveToErrorFolderOnException() throws IOException {
         DocumentConfiguration documentConfiguration = new DocumentConfiguration();
         DocumentConfiguration taskConfiguration = new DocumentConfiguration();
+        ApiConfiguration apiConfiguration = new ApiConfiguration();
+        apiConfiguration.setHost("http://localhost");
 
         File errorFolder = Files.newTemporaryFolder();
         documentConfiguration.setMoveToProcessed(true);
@@ -99,9 +102,10 @@ class FileSizeCheckingTaskTest {
         AppConfiguration configuration = new AppConfiguration();
         configuration.setDocuments(documentConfiguration);
         configuration.setTasks(taskConfiguration);
+        configuration.setApi(apiConfiguration);
 
         File test = File.createTempFile("test", ".pdf");
-        new FileSizeCheckingTask(test, InputType.DOCUMENT, configuration) {
+        new FileSizeCheckingTask(test, InputType.DOCUMENT, configuration, new DummyAvailabilityService()) {
             @Override
             public FileStatus handle(File path) {
                 throw new RuntimeException("Test Exception");
@@ -138,11 +142,22 @@ class FileSizeCheckingTaskTest {
     }
 
     private void execute(File file, AppConfiguration configuration, InputType taskType, FileStatus fileStatus) {
-        new FileSizeCheckingTask(file, taskType, configuration) {
+        new FileSizeCheckingTask(file, taskType, configuration, new DummyAvailabilityService()) {
             @Override
             protected FileStatus handle(File path) {
                 return fileStatus;
             }
         }.run();
+    }
+    
+    private static final class DummyAvailabilityService extends ApiAvailabilityService {
+        public DummyAvailabilityService() {
+            super(null);
+        }
+
+        @Override
+        public boolean checkAPIAvailability() {
+            return true;
+        }
     }
 }

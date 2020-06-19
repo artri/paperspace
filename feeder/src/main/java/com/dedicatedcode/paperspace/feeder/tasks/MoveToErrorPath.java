@@ -7,8 +7,8 @@ import com.dedicatedcode.paperspace.feeder.configuration.AppConfiguration;
 import java.io.File;
 
 public class MoveToErrorPath extends FileSizeCheckingTask {
-    public MoveToErrorPath(File file, InputType inputType, AppConfiguration configuration) {
-        super(file, inputType, configuration);
+    public MoveToErrorPath(File file, InputType inputType, AppConfiguration configuration, ApiAvailabilityService availabilityService) {
+        super(file, inputType, configuration, availabilityService);
     }
 
     @Override

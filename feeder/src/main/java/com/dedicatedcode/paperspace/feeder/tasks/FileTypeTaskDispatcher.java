@@ -27,21 +27,23 @@ public class FileTypeTaskDispatcher implements Runnable {
     @Override
     public void run() {
         boolean writable = waitForFileToBeCompletelyWritten();
+        ApiAvailabilityService apiAvailabilityService = new ApiAvailabilityService(this.configuration.getApi());
+
         if (writable) {
             log.debug("file [{}] fully written, determine file type now", file);
-            FileSizeCheckingTask fileHandlerTask = scheduleFileHandlerTask();
+            FileSizeCheckingTask fileHandlerTask = scheduleFileHandlerTask(apiAvailabilityService);
             log.info("dispatching file [{}] to new task of type [{}]", file, fileHandlerTask.getClass());
             this.threadPool.submit(fileHandlerTask);
         } else {
-            this.threadPool.submit(new MoveToErrorPath(file, inputType, configuration));
+            this.threadPool.submit(new MoveToErrorPath(file, inputType, configuration, apiAvailabilityService));
         }
     }
 
     private boolean waitForFileToBeCompletelyWritten() {
         log.debug("checking file size of [{}]", file);
         long lastCheckedSize = -1L;
-        int round = 1;
-        while (round++ <= 20 && lastCheckedSize != file.length()) {
+        int round = 0;
+        while (round++ < 20 && lastCheckedSize != file.length()) {
             log.debug("run [{}]: lastCheckedSize was [{}] current size now is [{}]", round, lastCheckedSize, file.length());
             try {
                 Thread.sleep(5000);
@@ -52,19 +54,18 @@ public class FileTypeTaskDispatcher implements Runnable {
         return lastCheckedSize == file.length();
     }
 
-    private FileSizeCheckingTask scheduleFileHandlerTask() {
+    private FileSizeCheckingTask scheduleFileHandlerTask(ApiAvailabilityService apiAvailabilityService) {
         try {
-            System.out.println(file.length());
             MagicMatch magicMatch = Magic.getMagicMatch(file, true, false);
             String mimeType = magicMatch.getMimeType();
             if ("application/pdf".equals(mimeType)) {
-                return new PDFDocumentHandler(file, inputType, configuration);
+                return new PDFDocumentHandler(file, inputType, configuration, apiAvailabilityService);
             } else {
-                return new MoveToIgnoredPath(file, inputType, configuration);
+                return new MoveToIgnoredPath(file, inputType, configuration, apiAvailabilityService);
             }
         } catch (MagicParseException | MagicMatchNotFoundException | MagicException e) {
             log.warn("getting file type of [{}] runs into", file, e);
-            return new MoveToErrorPath(file, inputType, configuration);
+            return new MoveToErrorPath(file, inputType, configuration, apiAvailabilityService);
         }
     }
 }
