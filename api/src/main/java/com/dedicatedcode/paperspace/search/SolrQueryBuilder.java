@@ -47,20 +47,20 @@ public class SolrQueryBuilder {
 
     private String escapeSpecialCharacters(String query) {
         return query
-                .replaceAll("\\\\[+]", "__PLUS__")
-                .replaceAll("\\\\[-]", "__MINUS__")
-                .replaceAll("\\(", "__PAR_START__")
-                .replaceAll("\\)", "__PAR_END__")
-                .replaceAll("\\*", "__STAR__");
+                .replaceAll("\\\\[+]", "__plus__")
+                .replaceAll("\\\\[-]", "__minus__")
+                .replaceAll("\\(", "__par_start__")
+                .replaceAll("\\)", "__par_end__")
+                .replaceAll("\\*", "__star__");
     }
 
     private String unescapeSpecialCharacters(String query) {
         return query
-                .replaceAll("__PLUS__", "+")
-                .replaceAll("__MINUS__", "-")
-                .replaceAll("__PAR_START__", "\\\\(")
-                .replaceAll("__PAR_END__", "\\\\)")
-                .replaceAll("__STAR__", "\\\\*");
+                .replaceAll("__plus__", "+")
+                .replaceAll("__minus__", "-")
+                .replaceAll("__par_start__", "\\\\(")
+                .replaceAll("__par_end__", "\\\\)")
+                .replaceAll("__star__", "\\\\*");
     }
 
     private enum Delimiter {
@@ -90,11 +90,11 @@ public class SolrQueryBuilder {
 
         public QueryPart(Delimiter delimiter, String searchKey) {
             this.delimiter = delimiter;
-            this.searchKey = searchKey;
+            this.searchKey = searchKey.toLowerCase();
         }
 
         public String createPart() {
-            return delimiter.delimiter + "(title:*" + searchKey + "*^10 OR description:*" + searchKey + "*^5 OR content:*" + searchKey + "*^2)";
+            return delimiter.delimiter + "(title:" + searchKey + "^10 OR description:" + searchKey + "^5 OR content:" + searchKey + "^2)";
 
         }
     }

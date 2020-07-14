@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="paperspace" version="1.2">
     <types>
-        <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
-        <fieldType name="integer" class="solr.IntPointField" sortMissingLast="true" omitNorms="true" docValues="true"/>
-        <fieldType name="long" class="solr.LongPointField" sortMissingLast="true" omitNorms="true" docValues="true"/>
-        <fieldType name="float" class="solr.FloatPointField" sortMissingLast="true" omitNorms="true" docValues="true"/>
-        <fieldType name="double" class="solr.DoublePointField" sortMissingLast="true" omitNorms="true" docValues="true"/>
-        <fieldType name="date" class="solr.DatePointField" sortMissingLast="true" omitNorms="true" docValues="true"/>
-        <fieldType name="tdate" class="solr.DatePointField" sortMissingLast="true" omitNorms="true" docValues="true"/>
-        <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
-        <fieldType name="string_ci" class="solr.TextField" sortMissingLast="true" omitNorms="true"/>
+        <fieldType name="integer" class="solr.IntPointField" sortMissingLast="true"  docValues="true"/>
+        <fieldType name="date" class="solr.DatePointField" sortMissingLast="true"  docValues="true"/>
+        <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
         <fieldType name="text" class="solr.TextField"/>
+
+        <fieldType name="string_ci" class="solr.TextField">
+            <analyzer type="index">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.NGramFilterFactory" minGramSize="1" maxGramSize="50"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
     </types>
     <fields>
         <field name="id" type="string" indexed="true" stored="true" required="true"/>
-        <field name="createdAt" type="date" indexed="true" stored="true" omitNorms="true"/>
-        <field name="documentDate" type="date" indexed="true" stored="true" omitNorms="true"/>
+        <field name="createdAt" type="date" indexed="true" stored="true" />
+        <field name="documentDate" type="date" indexed="true" stored="true" />
         <field name="_schema_version_" type="integer" indexed="true" stored="true" default="1"/>
-        <field name="title" type="text" indexed="true" stored="true" omitNorms="true" required="true"/>
-        <field name="description" type="text" indexed="true" stored="true" omitNorms="true"/>
-        <field name="content" type="text" indexed="true" stored="true" omitNorms="true"/>
-        <field name="documentType" type="string" indexed="true" stored="true" omitNorms="true"/>
+        <field name="title" type="string_ci" indexed="true" stored="true"  required="true"/>
+        <field name="description" type="string_ci" indexed="true" stored="true" />
+        <field name="content" type="string_ci" indexed="true" stored="true" />
+        <field name="documentType" type="string" indexed="true" stored="true" />
     </fields>
     <uniqueKey>id</uniqueKey>
 </schema>

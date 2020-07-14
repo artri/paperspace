@@ -16,23 +16,23 @@ class SolrQueryBuilderTest {
 
     @Test
     void shouldBuildSimpleQuery() {
-        assertEquals("+(title:*2020*^10 OR description:*2020*^5 OR content:*2020*^2)", builder.build("2020"));
+        assertEquals("+(title:2020^10 OR description:2020^5 OR content:2020^2)", builder.build("2020"));
     }
 
     @Test
     void shouldBuildAndQuery() {
-        assertEquals("+(title:*2020*^10 OR description:*2020*^5 OR content:*2020*^2)\n" +
-                "+(title:*Test*^10 OR description:*Test*^5 OR content:*Test*^2)", builder.build("2020 +Test"));
+        assertEquals("+(title:2020^10 OR description:2020^5 OR content:2020^2)\n" +
+                "+(title:test^10 OR description:test^5 OR content:test^2)", builder.build("2020 +Test"));
     }
 
     @Test
     void shouldBuildNotQuery() {
-        assertEquals("+(title:*2020*^10 OR description:*2020*^5 OR content:*2020*^2)\n" +
-                "-(title:*Test*^10 OR description:*Test*^5 OR content:*Test*^2)", builder.build("2020 -Test"));
+        assertEquals("+(title:2020^10 OR description:2020^5 OR content:2020^2)\n" +
+                "-(title:test^10 OR description:test^5 OR content:test^2)", builder.build("2020 -Test"));
     }
 
     @Test
     void shouldEscapeSpecialCharactersBuildNotQuery() {
-        assertEquals("+(title:*+\\(2020\\) -Test*^10 OR description:*+\\(2020\\) -Test*^5 OR content:*+\\(2020\\) -Test*^2)", builder.build("\\+(2020) \\-Test"));
+        assertEquals("+(title:+\\(2020\\) -test^10 OR description:+\\(2020\\) -test^5 OR content:+\\(2020\\) -test^2)", builder.build("\\+(2020) \\-Test"));
     }
 }
