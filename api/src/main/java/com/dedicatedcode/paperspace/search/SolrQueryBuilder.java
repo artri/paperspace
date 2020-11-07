@@ -1,5 +1,7 @@
 package com.dedicatedcode.paperspace.search;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,7 +16,40 @@ public class SolrQueryBuilder {
             return "*:*";
         } else {
             queryString = normalizeQueryString(queryString);
-            queryString = escapeSpecialCharacters(queryString);
+            char[] chars = escapeSpecialCharacters(queryString).toCharArray();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(chars[0]);
+
+            for (int i = 1; i < chars.length - 1; i++) {
+                char before = chars[i - 1];
+                char current = chars[i];
+                char after = chars[i + 1];
+
+                CharType typeBefore = CharType.type(before);
+                CharType typeCurrent = CharType.type(current);
+                CharType typeAfter = CharType.type(after);
+
+                switch (typeCurrent) {
+                    case ESCAPE:
+                        stringBuilder.append("\\");
+                    case SPACE:
+                    case CHAR:
+                        if (current == '(' || current == ')') {
+                            stringBuilder.append("\\");
+                        }
+                        stringBuilder.append(current);
+                        break;
+                    case KEYWORD:
+                        if (typeBefore == CharType.ESCAPE || typeBefore == CharType.CHAR)
+                            stringBuilder.append(current == '+' ? "__plus__" : "__minus__");
+                        else
+                            stringBuilder.append(current);
+                        break;
+                }
+            }
+            stringBuilder.append(chars[chars.length - 1]);
+
+            queryString = stringBuilder.toString();
             StringTokenizer tokenizer = new StringTokenizer(queryString, "+-", true);
             List<String> tokens = new ArrayList<>();
             while (tokenizer.hasMoreElements()) {
@@ -94,8 +129,29 @@ public class SolrQueryBuilder {
         }
 
         public String createPart() {
-            return delimiter.delimiter + "(title:" + searchKey + "^10 OR description:" + searchKey + "^5 OR content:" + searchKey + "^2)";
+            return delimiter.delimiter + "(title:\"" + searchKey + "\"^10 OR description:\"" + searchKey + "\"^5 OR content:\"" + searchKey + "\"^2)";
 
+        }
+    }
+
+    private enum CharType {
+        ESCAPE,
+        SPACE,
+        CHAR,
+        KEYWORD;
+
+        public static CharType type(char character) {
+            switch (character) {
+                case ' ':
+                    return SPACE;
+                case '-':
+                case '+':
+                    return KEYWORD;
+                case '\\':
+                    return ESCAPE;
+                default:
+                    return CHAR;
+            }
         }
     }
 }

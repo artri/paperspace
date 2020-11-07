@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-cd api && mvn clean verify && docker build . -t dedicatedcode/paperspace:latest
-cd ..
-cd feeder && mvn clean verify && docker build . -t dedicatedcode/paperspace-feeder:latest
+cd api && ./gradlew build && docker build . -t dedicatedcode/paperspace:latest
 cd ..
 cd search && docker build . -t dedicatedcode/paperspace-search:latest
 cd ..

@@ -1,0 +1,25 @@
+@font-face {
+  font-family: 'Bellota';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../font/bellota-v1-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Bellota Regular'), local('Bellota-Regular'),
+  url('../font/bellota-v1-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('../font/bellota-v1-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */ url('../font/bellota-v1-latin-regular.woff') format('woff'), /* Modern Browsers */ url('../font/bellota-v1-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */ url('../font/bellota-v1-latin-regular.svg#Bellota') format('svg'); /* Legacy iOS */
+}
+
+/* roboto-300 - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url('../font/roboto-v20-latin-300.eot'); /* IE9 Compat Modes */
+  src: local('Roboto Light'), local('Roboto-Light'),
+  url('../font/roboto-v20-latin-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('../font/roboto-v20-latin-300.woff2') format('woff2'), /* Super Modern Browsers */ url('../font/roboto-v20-latin-300.woff') format('woff'), /* Modern Browsers */ url('../font/roboto-v20-latin-300.ttf') format('truetype'), /* Safari, Android, iOS */ url('../font/roboto-v20-latin-300.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+
+.is-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+}

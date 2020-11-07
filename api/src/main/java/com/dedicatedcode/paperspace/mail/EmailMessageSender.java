@@ -13,6 +13,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 import java.time.LocalDateTime;
 
 @Component
@@ -20,7 +21,6 @@ public class EmailMessageSender implements MessageSender {
     private static final Logger log = LoggerFactory.getLogger(EmailMessageSender.class);
 
     private final BinaryService binaryService;
-    private final StorageService storageService;
     private final boolean enabled;
     private final boolean attachDocuments;
     private final String sender;
@@ -29,9 +29,8 @@ public class EmailMessageSender implements MessageSender {
 
 
     @Autowired
-    public EmailMessageSender(BinaryService binaryService, StorageService storageService, @Value("${email.enabled}") boolean enabled, @Value("${email.attach_documents}") boolean attachDocuments, @Value("${email.sender-address}") String sender, JavaMailSender mailSender, @Value("${email.target-address}") String toAddress) {
+    public EmailMessageSender(BinaryService binaryService, @Value("${email.enabled}") boolean enabled, @Value("${email.attach_documents}") boolean attachDocuments, @Value("${email.sender-address}") String sender, JavaMailSender mailSender, @Value("${email.target-address}") String toAddress) {
         this.binaryService = binaryService;
-        this.storageService = storageService;
         this.enabled = enabled;
         this.attachDocuments = attachDocuments;
         this.sender = sender;
@@ -60,7 +59,7 @@ public class EmailMessageSender implements MessageSender {
                 for (MessageAttachment attachment : message.getAttachments()) {
                     if (attachment.getType() == MessageAttachment.AttachmentType.BINARY) {
                         Binary binary = this.binaryService.get(attachment.getId());
-                        helper.addAttachment(binary.getOriginalFileName(), this.storageService.load(binary.getId()));
+                        helper.addAttachment(binary.getStorageLocation(), new File(binary.getStorageLocation()));
                     } else {
                         log.error("Could not add unknown attachment type [{}] to email", attachment.getType());
                         return message.withState(MessageState.FAILED).withRecipient(toAddress).withSendAt(LocalDateTime.now());

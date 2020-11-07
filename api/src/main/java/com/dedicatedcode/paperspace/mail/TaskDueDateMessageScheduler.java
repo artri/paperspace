@@ -1,8 +1,9 @@
 package com.dedicatedcode.paperspace.mail;
 
+import com.dedicatedcode.paperspace.model.Document;
+import com.dedicatedcode.paperspace.model.DocumentListener;
 import com.dedicatedcode.paperspace.model.State;
 import com.dedicatedcode.paperspace.model.TaskDocument;
-import com.dedicatedcode.paperspace.model.TaskDocumentListener;
 import com.dedicatedcode.paperspace.web.TaskDocumentResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 @Service
-public class TaskDueDateMessageScheduler implements TaskDocumentListener {
+public class TaskDueDateMessageScheduler implements DocumentListener {
     private final JdbcMessageService messageService;
     private final TemplateEngine textTemplateEngine;
     private final String recipient;
@@ -29,42 +30,51 @@ public class TaskDueDateMessageScheduler implements TaskDocumentListener {
     }
 
     @Override
-    public void changed(TaskDocument oldVersion, TaskDocument newVersion) {
-        String messageIdentifier = "TASK_DUE_" + newVersion.getId();
-        if (newVersion.getState() == State.DONE) {
-            this.messageService.getScheduledMessageBy(messageIdentifier).forEach(this.messageService::deleteMessage);
-        } else if (!oldVersion.getDueAt().equals(newVersion.getDueAt())) {
-            this.messageService.getScheduledMessageBy(messageIdentifier).forEach(this.messageService::deleteMessage);
+    public void changed(Document oldVersion, Document newVersion) {
+        if (oldVersion instanceof TaskDocument && newVersion instanceof TaskDocument) {
+            String messageIdentifier = "TASK_DUE_" + newVersion.getId();
+            if (((TaskDocument) newVersion).getState() == State.DONE) {
+                this.messageService.getScheduledMessageBy(messageIdentifier).forEach(this.messageService::deleteMessage);
+            } else if (!((TaskDocument) oldVersion).getDueAt().equals(((TaskDocument) newVersion).getDueAt())) {
+                this.messageService.getScheduledMessageBy(messageIdentifier).forEach(this.messageService::deleteMessage);
+                created(newVersion);
+            }
+        } else if (!(oldVersion instanceof TaskDocument) && newVersion instanceof TaskDocument) {
             created(newVersion);
+        } else if (oldVersion instanceof TaskDocument) {
+            deleted(oldVersion);
         }
     }
 
     @Override
-    public void created(TaskDocument document) {
-        String messageIdentifier = "TASK_DUE_" + document.getId();
-        List<MessageAttachment> attachments = new ArrayList<>();
-        attachments.add(new MessageAttachment(MessageAttachment.AttachmentType.BINARY, document.getFile().getId()));
+    public void created(Document document) {
+        if (document instanceof TaskDocument) {
+            TaskDocument task = (TaskDocument) document;
+            String messageIdentifier = "TASK_DUE_" + document.getId();
+            List<MessageAttachment> attachments = new ArrayList<>();
+            attachments.add(new MessageAttachment(MessageAttachment.AttachmentType.BINARY, task.getFile().getId()));
 
-        Context context = new Context(Locale.GERMAN);
-        context.setVariable("document", new TaskDocumentResponse(document));
-        context.setVariable("appHost", this.appHost);
+            Context context = new Context(Locale.GERMAN);
+            context.setVariable("document", new TaskDocumentResponse(task));
+            context.setVariable("appHost", this.appHost);
 
-        String body = textTemplateEngine.process("task_due", context);
-        String subject = "Task needs attention";
+            String body = textTemplateEngine.process("task_due", context);
+            String subject = "Task needs attention";
 
-        this.messageService.storeMessage(
-                new Message(UUID.randomUUID(),
-                        MessageType.EMAIL,
-                        MessageState.SCHEDULED,
-                        subject,
-                        body,
-                        document.getDueAt().minusDays(1).withHour(12).withMinute(0),
-                        recipient,
-                        attachments), messageIdentifier);
+            this.messageService.storeMessage(
+                    new Message(UUID.randomUUID(),
+                            MessageType.EMAIL,
+                            MessageState.SCHEDULED,
+                            subject,
+                            body,
+                            task.getDueAt().minusDays(1).withHour(12).withMinute(0),
+                            recipient,
+                            attachments), messageIdentifier);
+        }
     }
 
     @Override
-    public void deleted(TaskDocument document) {
+    public void deleted(Document document) {
         String messageIdentifier = "TASK_DUE_" + document.getId();
         this.messageService.getScheduledMessageBy(messageIdentifier).forEach(messageService::deleteMessage);
     }

@@ -32,7 +32,7 @@ public class DocumentUploadMailScheduler implements DocumentListener {
     }
 
     @Override
-    public void changed(Document document) {
+    public void changed(Document oldVersion, Document newVersion) {
 
     }
 

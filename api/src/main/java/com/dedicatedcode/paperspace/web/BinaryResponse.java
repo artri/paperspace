@@ -3,15 +3,17 @@ package com.dedicatedcode.paperspace.web;
 import com.dedicatedcode.paperspace.model.Binary;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 public class BinaryResponse {
     private final Binary binary;
-    private final Links links;
+    private final Map<String,String> links;
 
     public BinaryResponse(Binary binary) {
         this.binary = binary;
-        this.links = new Links("/download/" + binary.getId());
+        this.links = Collections.singletonMap("download", "/download/" + binary.getId());
     }
 
     public UUID getId() {
@@ -30,23 +32,15 @@ public class BinaryResponse {
         return binary.getCreatedAt();
     }
 
-    public String getOriginalFileName() {
-        return binary.getOriginalFileName();
+    public String getStorageLocation() {
+        return binary.getStorageLocation();
     }
 
-    public Links getLinks() {
+    public String getFilename() {
+        return this.binary.getStorageLocation().substring(this.binary.getStorageLocation().lastIndexOf("/") + 1);
+    }
+
+    public Map<String, String> getLinks() {
         return links;
-    }
-
-    private static class Links {
-        private final String download;
-
-        private Links(String download) {
-            this.download = download;
-        }
-
-        public String getDownload() {
-            return download;
-        }
     }
 }

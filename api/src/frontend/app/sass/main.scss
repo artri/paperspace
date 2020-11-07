@@ -1,0 +1,96 @@
+$fa-font-path: "/font" !default;
+$family-sans-serif: 'Roboto';
+@import "node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+@import "node_modules/@fortawesome/fontawesome-free/scss/regular";
+@import "node_modules/@fortawesome/fontawesome-free/scss/solid";
+@import "node_modules/bulma/bulma";
+@import "node_modules/bulma-calendar/dist/css/bulma-calendar.min";
+@import "select2";
+@import "side_navigation";
+@import "documents";
+@import "search";
+@import "loader";
+@import "fonts";
+@import "flickity";
+@import "tags";
+
+.is-full-width {
+  width: 100%;
+}
+
+.bg-pan-bottom {
+  -webkit-animation: bg-pan-bottom 4s infinite ease 1s alternate both;
+  animation: bg-pan-bottom 4s infinite ease 1s alternate both
+}
+
+@-webkit-keyframes bg-pan-bottom {
+  0% {
+    background-position: 50% 0
+  }
+  100% {
+    background-position: 50% 100%
+  }
+}
+
+@keyframes bg-pan-bottom {
+  0% {
+    background-position: 50% 0
+  }
+  100% {
+    background-position: 50% 100%
+  }
+}
+
+aside,
+.navbar-brand {
+  font-family: 'Bellota';
+}
+
+.is-upload {
+  background-image: linear-gradient(to top, #7affc2 0%, #6c4788 100%);
+  background-size: 100% 300%;
+  color: white;
+
+  &:hover {
+    -webkit-animation: bg-pan-bottom 4s infinite ease 1s alternate both;
+    animation: bg-pan-bottom 4s infinite ease 1s alternate both;
+    color: white;
+  }
+
+  & span {
+    color:white;
+  }
+}
+
+.datetimepicker-dummy.is-primary .datetimepicker-clear-button {
+  display: none;
+}
+
+.button.is-type-chooser {
+  font-size: 4.5rem;
+}
+
+.blinking {
+  animation: blinkingText 1.8s ease alternate-reverse infinite;
+}
+
+@keyframes blinkingText {
+  0% {
+    color: transparent;
+  }
+  30% {
+    color: #6ba28e;
+  }
+  70% {
+    color: #6e6491;
+  }
+}
+
+.notification.is-fixed {
+  position: fixed;
+  bottom: 0;
+  z-index: 100;
+  right: 0;
+  margin: 24px;
+  max-width: 400px;
+}

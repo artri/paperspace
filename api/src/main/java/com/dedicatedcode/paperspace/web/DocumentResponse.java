@@ -2,7 +2,11 @@ package com.dedicatedcode.paperspace.web;
 
 import com.dedicatedcode.paperspace.model.Binary;
 import com.dedicatedcode.paperspace.model.Document;
+import com.dedicatedcode.paperspace.model.Tag;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.HtmlUtils;
+import org.unbescape.html.HtmlEscape;
+import org.unbescape.html.HtmlEscapeType;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -13,24 +17,44 @@ public class DocumentResponse {
     private final Map<String, String> links;
     private final String previewText;
     private final List<PageResponse> pages;
+    private final List<Tag> tags;
 
     public DocumentResponse(Document document) {
         this(document, null);
     }
+
     public DocumentResponse(Document document, String previewText) {
-        this(document, new Links("/document/", document), previewText, Collections.emptyMap());
+        this(document, createLinkMap(document), previewText);
     }
 
-    DocumentResponse(Document document, Links links, String previewText, Map<String, String> additionalLinks) {
+    private static Map<String, String> createLinkMap(Document document) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("self", "/document/" + document.getId());
+        map.put("edit", "/api/document/" + document.getId());
+        map.put("pages", "/api/document/" + document.getId() + "/pages");
+        map.put("download", "/api/download/" + document.getFile().getId());
+        map.put("view", "/api/view/" + document.getFile().getId());
+        map.put("preview", document.getPages().stream().findFirst().map(page -> "/api/image/" + page.getPreview().getId() + "?width=560").orElse(null));
+        return map;
+    }
+
+    DocumentResponse(Document document, Map<String, String> links, String previewText) {
         this.document = document;
-        this.links = links.toMap();
-        if (previewText == null) {
-            this.previewText = createFromContent(document);
-        } else {
-            this.previewText = previewText;
-        }
-        this.links.putAll(additionalLinks);
+        this.links = links;
+        this.previewText = createPreviewText(document, previewText);
         this.pages = document.getPages().stream().map(PageResponse::new).collect(Collectors.toList());
+        this.tags = document.getTags();
+    }
+
+    private String createPreviewText(Document document, String previewText) {
+        if (previewText == null) {
+            return HtmlUtils.htmlEscape(createFromContent(document));
+        } else {
+            return HtmlUtils.htmlEscape(previewText)
+                    .replaceAll("&lt;em&gt;", "<em>")
+                    .replaceAll("&lt;/em&gt;", "</em>");
+        }
+
     }
 
     private String createFromContent(Document document) {
@@ -85,43 +109,7 @@ public class DocumentResponse {
         return links;
     }
 
-    public static class Links {
-        private final String self;
-        private final String pages;
-        private final String view;
-        private final String download;
-
-        Links(String base, Document document) {
-            this.self = base + document.getId();
-            this.pages = base + document.getId() + "/pages";
-            this.download = "/download/" + document.getFile().getId();
-            this.view = "/view/" + document.getFile().getId();
-        }
-
-        public String getSelf() {
-            return self;
-        }
-
-        public String getPages() {
-            return pages;
-        }
-
-        public String getView() {
-            return view;
-        }
-
-        public String getDownload() {
-            return download;
-        }
-
-        public Map<String, String> toMap() {
-            HashMap<String, String> map = new HashMap<>();
-            map.put("self", self);
-            map.put("pages", pages);
-            map.put("download", download);
-            map.put("view", view);
-            return map;
-        }
+    public List<Tag> getTags() {
+        return tags;
     }
-
 }

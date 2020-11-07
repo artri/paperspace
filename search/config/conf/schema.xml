@@ -27,6 +27,7 @@
         <field name="description" type="string_ci" indexed="true" stored="true" />
         <field name="content" type="string_ci" indexed="true" stored="true" />
         <field name="documentType" type="string" indexed="true" stored="true" />
+        <field name="tags" type="string" indexed="true" stored="true" multiValued="true" omitNorms="true"/>
     </fields>
     <uniqueKey>id</uniqueKey>
 </schema>

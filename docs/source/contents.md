@@ -10,9 +10,7 @@ This installation assumes a system running Ubuntu 20.04 LTS. For other systems p
 ##### prerequisites
 You need following applications installed on the host.
 * git
-* maven
 * openjdk-11
-* MariaDB  
 * tesseract
 * tesseract language package
 * solr  
@@ -20,9 +18,9 @@ You need following applications installed on the host.
 For successful ocr you have to choose in which language your documents are. The next steps assume german. Replace 
 the language code *deu* with your language code.
 
-To install MariaDB, tesseract-ocr, tesseract language file, git and openjdk execute:
+To install tesseract-ocr, tesseract language file, git and openjdk execute:
 ```
-sudo apt-get install mariadb-server tesseract-ocr tesseract-ocr-deu openjdk-11-jdk-headless git maven
+sudo apt-get install tesseract-ocr tesseract-ocr-deu openjdk-11-jdk-headless git
 ```
 ######  clone repository
 ```
@@ -50,42 +48,29 @@ restart solr
 ```shell script
 sudo systemctl restart solr.service
 ```
-###### Create database
 
-login into MariaDB and create Database and user for paper{s}pace.
-```sql
-CREATE DATABASE paperspace DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;
-CREATE USER 'paperspace'@'%' IDENTIFIED BY 'paperspace';
-GRANT ALL PRIVILEGES ON paperspace.* TO 'paperspace'@'%' WITH GRANT OPTION;
-```
-You can change the username, password and database name but have to adjust the configuration properties for the app.
-
-###### install app and feeder
+###### install app 
 1. create user for app
     ```shell script
     sudo useradd -M -s /bin/false paperspace
     ```
 2. create installation folders
     ```shell script
-    sudo mkdir /opt/{paperspace-app,paperspace-feeder}
+    sudo mkdir /opt/paperspace-app
     ```
-3. build feeder and api
+3. build api
     ```shell script
     cd <checkout-dir>
-    cd feeder && mvn package && cd ..   
     cd api && mvn package && cd ..   
     ```
 4. copy executables
    ```shell script
-   sudo cp feeder/target/feeder.jar /opt/paperspace-feeder/feeder.jar
    sudo cp api/target/api.jar /opt/paperspace-app/app.jar
    ```
 5. copy and adjust application.properties
     ```shell script
-    sudo cp feeder/src/main/resources/application-docker.properties /opt/paperspace-feeder/application.properties
     sudo cp api/src/main/resources/application-docker.properties /opt/paperspace-app/application.properties
    
-    sudo chown -R paperspace:paperspace /opt/paperspace-feeder
     sudo chown -R paperspace:paperspace /opt/paperspace-app
     ```
    After this you should have the opt folder populatet like this:
@@ -93,9 +78,6 @@ You can change the username, password and database name but have to adjust the c
     paperspace-app
     ├── api.jar
     └── application.properties
-    paperspace-feeder
-    ├── application.properties
-    └── feeder.jar
     ```
 6. adjust paths, language and api host in feeder
     
@@ -117,11 +99,11 @@ You can change the username, password and database name but have to adjust the c
    feeder.documents.error=${DOCUMENT_ERROR:/data/error/documents}
    feeder.documents.processed=${DOCUMENT_PROCESSED:/data/processed/documents}
    feeder.documents.moveToProcessed=${DOCUMENT_BACKUP:false}
-   feeder.tasks.input=${TASK_INPUT:/data/input/tasks}
-   feeder.tasks.ignored=${TASK_IGNORED:/data/ignored/tasks}
-   feeder.tasks.error=${TASK_ERROR:/data/error/tasks}
-   feeder.tasks.processed=${TASK_PROCESSED:/data/processed/tasks}
-   feeder.tasks.moveToProcessed=${TASK_BACKUP:false}
+   feeder.com.dedicatedcode.paperspace.feeder.tasks.input=${TASK_INPUT:/data/input/com.dedicatedcode.paperspace.feeder.tasks}
+   feeder.com.dedicatedcode.paperspace.feeder.tasks.ignored=${TASK_IGNORED:/data/ignored/com.dedicatedcode.paperspace.feeder.tasks}
+   feeder.com.dedicatedcode.paperspace.feeder.tasks.error=${TASK_ERROR:/data/error/com.dedicatedcode.paperspace.feeder.tasks}
+   feeder.com.dedicatedcode.paperspace.feeder.tasks.processed=${TASK_PROCESSED:/data/processed/com.dedicatedcode.paperspace.feeder.tasks}
+   feeder.com.dedicatedcode.paperspace.feeder.tasks.moveToProcessed=${TASK_BACKUP:false}
    feeder.ocr.datapath=/usr/share/tesseract-ocr/4.00/tessdata
    feeder.ocr.language=${OCR_LANGUAGE:deu}
     ```
@@ -160,38 +142,17 @@ You can change the username, password and database name but have to adjust the c
     sudo nano /opt/paperspace-app/application.properties
     ```
    An explanation of every key can also be found in the [README](https://gitlab.com/dedicatedcode/paperspace#docker-configuration).
-   If you enable emailing please make sure the properties starting with mailing are set.
+   If you enable emailing please make sure to set the properties starting with mailing.
    
-7. create folders for feeder and app
+7. create folders app
 
    If you have adjusted the paths in the application.properties you have to make sure all paths are existing and writable to the feeder and the application. You can execute the following command to create the default paths.
    ```shell script
-   sudo mkdir -p /data/{input,ignored,error,processed}/{tasks,documents}
    sudo mkdir -p /binary
-   
-   sudo chown -R paperspace:paperspace /data/input
-   sudo chown -R paperspace:paperspace /data/error
-   sudo chown -R paperspace:paperspace /data/ignored
-   sudo chown -R paperspace:paperspace /data/processed
    sudo chown -R paperspace:paperspace /binary
    ```
 
 8. create service files
-    ```shell script
-    sudo tee <<EOF /etc/systemd/system/paperspace-feeder.service >/dev/null
-    [Unit]
-    Description=paperspace-feeder
-    After=syslog.target
-    
-    [Service]
-    User=paperspace
-    ExecStart=/opt/paperspace-feeder/feeder.jar
-    SuccessExitStatus=143
-    
-    [Install]
-    WantedBy=multi-user.target
-    EOF
-   ```
    ```shell script
    sudo tee <<EOF /etc/systemd/system/paperspace-app.service >/dev/null
    [Unit]
@@ -215,9 +176,7 @@ You can change the username, password and database name but have to adjust the c
 
 9. start services
    ```shell script
-    sudo systemctl enable paperspace-feeder
     sudo systemctl enable paperspace-app 
-    sudo systemctl start paperspace-feeder
     sudo systemctl start paperspace-app
     ```
    
