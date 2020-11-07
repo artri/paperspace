@@ -61,8 +61,6 @@ node {
 bootJar {
     archiveName = 'api.jar'
 }
-// run gulp install
-gulp_dist.dependsOn 'installGulp'
 
 gulp {
     workDir = file("${project.projectDir}/src/frontend/")
