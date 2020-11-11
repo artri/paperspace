@@ -8,6 +8,7 @@ stages:
 build-api:
   stage: build
   before_script:
+    - apt update && apt install nodejs npm
     - chmod u+x api/gradlew
   script:
     - cd api && ./gradlew --info build
