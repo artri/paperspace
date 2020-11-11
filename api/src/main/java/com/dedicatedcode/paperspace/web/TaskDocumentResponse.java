@@ -1,10 +1,12 @@
 package com.dedicatedcode.paperspace.web;
 
+import com.dedicatedcode.paperspace.model.Document;
 import com.dedicatedcode.paperspace.model.State;
 import com.dedicatedcode.paperspace.model.TaskDocument;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TaskDocumentResponse extends DocumentResponse {
     private final TaskDocument document;
@@ -14,8 +16,20 @@ public class TaskDocumentResponse extends DocumentResponse {
     }
 
     public TaskDocumentResponse(TaskDocument document, String previewText) {
-        super(document, new DocumentResponse.Links("/task/", document), previewText, Collections.singletonMap("done", "/task/" + document.getId() + "/done"));
+        super(document, createLinkMap(document), previewText);
         this.document = document;
+    }
+
+    private static Map<String, String> createLinkMap(Document document) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("self", "/task/" + document.getId());
+        map.put("edit", "/api/task/" + document.getId());
+        map.put("pages", "/api/task/" + document.getId() + "/pages");
+        map.put("download", "/api/task/" + document.getFile().getId());
+        map.put("done", "/api/task/" + document.getId() + "/done");
+        map.put("view", "/api/view/" + document.getFile().getId());
+        map.put("preview", document.getPages().stream().findFirst().map(page -> "/api/image/" + page.getPreview().getId() + "?width=560").orElse(null));
+        return map;
     }
 
     public String getType() {

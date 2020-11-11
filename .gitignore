@@ -10,3 +10,4 @@
 /deployment/examples/.env
 /local-data/
 /docs/build/
+/paperspace.db

@@ -1,0 +1,40 @@
+.aside {
+  display: block;
+  background-color: #F9F9F9;
+  border-right: 1px solid #DEDEDE;
+
+  &.is-fullheight {
+    min-height: 100vh;
+  }
+
+  & .compose {
+    height: 95px;
+    margin: 0 -10px;
+    padding: 25px 30px;
+  }
+
+  & .main {
+    color: #6F7B7E;
+
+    & .item.active {
+      background-color: #F1F1F1;
+    }
+
+    & .item.button {
+      text-decoration: none;
+      background: #F9F9F9;
+      padding: 0 2rem;
+
+      & .tag-remove {
+        display: none;
+      }
+
+      &.active {
+        color: #6d5b8e;
+        .tag-remove {
+          display: initial;
+        }
+      }
+    }
+  }
+}

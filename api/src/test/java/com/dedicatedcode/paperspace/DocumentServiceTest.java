@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static com.dedicatedcode.paperspace.AssertionUtils.DateTimeComparePrecision.SECONDS;
+import static com.dedicatedcode.paperspace.AssertionUtils.assertDateTimeEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -27,11 +30,11 @@ class DocumentServiceTest {
     @Test
     void shouldStoreEmptyDocument() {
         Binary binaryId = storeBinary();
-        Document document = new Document(UUID.randomUUID(), LocalDateTime.now(), "Test Title ä", "Test Description", binaryId, Collections.emptyList());
+        Document document = new Document(UUID.randomUUID(), LocalDateTime.now(), "Test Title ä", "Test Description", binaryId, Collections.emptyList(), Collections.emptyList());
         this.documentService.store(document);
         Document storedDocument = this.documentService.getDocument(document.getId());
         assertEquals(document.getId(), storedDocument.getId());
-        assertEquals(document.getCreatedAt(), storedDocument.getCreatedAt());
+        assertDateTimeEquals(document.getCreatedAt(), storedDocument.getCreatedAt(), SECONDS);
         assertEquals(document.getTitle(), storedDocument.getTitle());
         assertEquals(document.getDescription(), storedDocument.getDescription());
         assertEquals(document.getContent(), storedDocument.getContent());
@@ -48,11 +51,11 @@ class DocumentServiceTest {
                 new Page(UUID.randomUUID(), 3, "Test Content 3", storeBinary()),
                 new Page(UUID.randomUUID(), 4, "Test Content 4", storeBinary())
         );
-        Document document = new Document(UUID.randomUUID(), LocalDateTime.now(), "Test Title ä", "Test Description", binaryId, pages);
+        Document document = new Document(UUID.randomUUID(), LocalDateTime.now(), "Test Title ä", "Test Description", binaryId, pages, Collections.emptyList());
         this.documentService.store(document);
         Document storedDocument = this.documentService.getDocument(document.getId());
         assertEquals(document.getId(), storedDocument.getId());
-        assertEquals(document.getCreatedAt(), storedDocument.getCreatedAt());
+        assertDateTimeEquals(document.getCreatedAt(), storedDocument.getCreatedAt(), SECONDS);
         assertEquals(document.getTitle(), storedDocument.getTitle());
         assertEquals(document.getDescription(), storedDocument.getDescription());
         assertEquals(document.getContent(), storedDocument.getContent());
@@ -74,7 +77,7 @@ class DocumentServiceTest {
 
     @Test
     void shouldUpdateTaskDocument() {
-        TaskDocument taskDocument = new TaskDocument(UUID.randomUUID(), LocalDateTime.now(), "Test Task Title", null, storeBinary(), State.OPEN, Collections.emptyList(), null, null);
+        TaskDocument taskDocument = new TaskDocument(UUID.randomUUID(), LocalDateTime.now(), "Test Task Title", null, storeBinary(), State.OPEN, Collections.emptyList(), null, null, Collections.emptyList());
         TaskDocument storedDocument = this.documentService.store(taskDocument);
 
         LocalDateTime dueAt = LocalDateTime.now().plusDays(2);
@@ -84,7 +87,7 @@ class DocumentServiceTest {
                         .withDueAt(dueAt));
 
         storedDocument = (TaskDocument) this.documentService.getDocument(taskDocument.getId());
-        assertEquals(dueAt, storedDocument.getDueAt());
+        assertDateTimeEquals(dueAt, storedDocument.getDueAt(), SECONDS);
 
         this.documentService.update(
                 storedDocument
@@ -92,12 +95,12 @@ class DocumentServiceTest {
                         .withDoneAt(doneAt));
 
         storedDocument = (TaskDocument) this.documentService.getDocument(taskDocument.getId());
-        assertEquals(dueAt, storedDocument.getDueAt());
+        assertDateTimeEquals(dueAt, storedDocument.getDueAt(), SECONDS);
         assertEquals(State.DONE, storedDocument.getState());
-        assertEquals(doneAt, storedDocument.getDoneAt());
+        assertDateTimeEquals(doneAt, storedDocument.getDoneAt(), SECONDS);
 
         Page page = new Page(UUID.randomUUID(), 1, "TEST CONTENT", storeBinary());
-        this.documentService.update(storedDocument.addPage(page));
+        this.documentService.update(storedDocument.withPages(Collections.singletonList(page)));
 
         storedDocument = (TaskDocument) this.documentService.getDocument(taskDocument.getId());
         assertEquals("TEST CONTENT", storedDocument.getContent());
@@ -106,7 +109,12 @@ class DocumentServiceTest {
     }
 
     private Binary storeBinary() {
-        Binary binary = new Binary(UUID.randomUUID(), LocalDateTime.now(), "Test Binary", "application/pdf", 100);
+        Binary binary = new Binary(UUID.randomUUID(),
+                LocalDateTime.now(),
+                System.getProperty("java.io.tmpdir") + File.separatorChar + UUID.randomUUID() + ".pdf",
+                UUID.randomUUID().toString(),
+                "application/pdf",
+                100);
         this.binaryService.store(binary);
         return binary;
     }

@@ -4,39 +4,58 @@ import com.dedicatedcode.paperspace.web.DocumentResponse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class SearchResponse {
     private final List<DocumentResponse> items;
-    private final long page;
-    private final long totalPages;
-    private final long results;
     private final Map<String, Object> pagination;
+    private final List<TagFacet> tags;
 
-    public SearchResponse(List<DocumentResponse> items, long page, long totalPages, long results, Map<String, Object> pagination) {
+    public SearchResponse(List<DocumentResponse> items, Map<String, Object> pagination, List<TagFacet> tags) {
         this.items = items;
-        this.page = page;
-        this.totalPages = totalPages;
-        this.results = results;
         this.pagination = pagination;
+        this.tags = tags;
     }
 
     public List<DocumentResponse> getItems() {
         return items;
     }
 
-    public long getPage() {
-        return page;
-    }
-
-    public long getTotalPages() {
-        return totalPages;
-    }
-
-    public long getResults() {
-        return results;
-    }
-
     public Map<String, Object> getPagination() {
         return pagination;
+    }
+
+    public List<TagFacet> getTags() {
+        return tags;
+    }
+
+    public static class TagFacet {
+        private final UUID id;
+        private final String name;
+        private final long count;
+        private final boolean active;
+
+        public TagFacet(UUID id, String name, long count, boolean active) {
+            this.id = id;
+            this.name = name;
+            this.count = count;
+            this.active = active;
+        }
+
+        public UUID getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public long getCount() {
+            return count;
+        }
+
+        public boolean isActive() {
+            return active;
+        }
     }
 }

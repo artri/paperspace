@@ -1,48 +1,36 @@
-version: "3"
+version: "3.4"
 services:
   api:
     image: dedicatedcode/paperspace:latest
     depends_on:
-      - db
       - search
     restart: unless-stopped
     environment:
+      OCR_LANGUAGE: 'deu'
       APPLICATION_HOST: 'http://localhost:8080'
-      DB_TABLE: '${MYSQL_DATABASE}'
-      DB_USER: '${MYSQL_USER}'
-      DB_PASSWORD: '${MYSQL_PASSWORD}'
-
     volumes:
-      - ../data/api/binary:/binary
+      - paperspace:/storage
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     ports:
       - 8080:8080
-  feeder:
-    image: dedicatedcode/paperspace-feeder:latest
-    depends_on:
-      - api
-    restart: unless-stopped
-    environment:
-      OCR_LANGUAGE: '${OCR_LANGUAGE}'
-    volumes:
-      - ../data/feeder/task/input:/data/input/tasks
-      - ../data/feeder/task/error:/data/errors/tasks
-      - ../data/feeder/documents/input:/data/input/documents
-      - ../data/feeder/documents/error:/data/errors/documents
   search:
     image: dedicatedcode/paperspace-search:latest
     restart: unless-stopped
     volumes:
-      - ../data/solr:/data/solr
+      - paperspace-search:/data/solr
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8983/solr/documents/admin/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     ports:
       - 8983:8983
-  db:
-    image: mariadb
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: '${MYSQL_DATABASE}'
-      MYSQL_USER: '${MYSQL_USER}'
-      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
-    volumes:
-      - ../data/database:/var/lib/mysql
-    ports:
-      - 3310:3306
+volumes:
+  paperspace:
+  paperspace-search:

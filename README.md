@@ -1,7 +1,7 @@
 # paper{s}pace
 
 a small web application to manage all your offline documents. 
-Provides a searchable storage for your documents and reminds you of upcoming tasks.
+Provides a searchable storage for your documents and reminds you of upcoming com.dedicatedcode.paperspace.feeder.tasks.
 
 ![screenshot of the start page](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/5c02cb86506303adacbd1fb3bbf6decc/screenshot-2020-06-06-05_29_57.png)
 
@@ -10,8 +10,8 @@ More screenshots of the current state can be found in the [wiki](https://gitlab.
 what can it do:
 - provides a searchable storage for your documents 
 - easy to install and use
-- stores automatically documents or tasks placed in specific folders
-- tasks have a due date associated, and you will be reminded before the date is approaching by mail
+- stores automatically documents or com.dedicatedcode.paperspace.feeder.tasks placed in specific folders
+- com.dedicatedcode.paperspace.feeder.tasks have a due date associated, and you will be reminded before the date is approaching by mail
 
 what is it **not** (and probably never be)
 - not a full sized business application
@@ -24,7 +24,7 @@ I was getting tired of having to store all my offline documents and then can´t 
 After trying multiple solutions for this problem and not finding a simple one I decided to tackle that on my own.
 
 So my workflow with paper{s}pace:
-- scan a document with my [Brother-ADS-1100W](https://www.amazon.de/Brother-ADS-1100W-Dokumentenscanner-Duplex-schwarz/dp/B00GHUCKBY) which uploads it via ftp in either the documents- or tasks-folder.
+- scan a document with my [Brother-ADS-1100W](https://www.amazon.de/Brother-ADS-1100W-Dokumentenscanner-Duplex-schwarz/dp/B00GHUCKBY) which uploads it via ftp in either the documents- or com.dedicatedcode.paperspace.feeder.tasks-folder.
 - get a mail when the processing is done and i can open the document directly from my browser and print it or add some metadata. 
 - if it is a task, then the app will remind me when the task needs attention (I´m terrible at remembering that stuff).
 
@@ -81,7 +81,7 @@ This stack does not send emails on an upload of a document. It also does not sen
 
 #### stack including a preconfigured ftp server
 This stack comes with a ftp server which listens on port 21 incl. PASV support. 
-You can either upload documents or tasks directly via ftp or setup your document scanner to upload the scanned PDF´s in the appropriate folders.
+You can either upload documents or com.dedicatedcode.paperspace.feeder.tasks directly via ftp or setup your document scanner to upload the scanned PDF´s in the appropriate folders.
 
 [docker-compose.yml](https://gitlab.com/dedicatedcode/paperspace/-/blob/master/deployment/examples/complete-with-ftp.yml)
 
@@ -100,7 +100,7 @@ API Configuration Options
 | SEARCH_PORT | n | '8983' | Port of the solr instance. |
 | STORAGE_PATH | n | '/binary' | where do we store the uploaded binary files. This is also the folder you should backup. |
 | ENABLE_MAIL | n | 'false' | Is sending emails enabled. If enabled all the other properties starting handling mails should be set.|
-| MAIL_TO_ADDRESS | n | '' | Who receives notifications about new documents or upcoming tasks?|
+| MAIL_TO_ADDRESS | n | '' | Who receives notifications about new documents or upcoming com.dedicatedcode.paperspace.feeder.tasks?|
 | MAIL_FROM_ADDRESS | n | '' | In which name should the system send out emails. |
 | MAIL_ATTACH_DOCUMENTS | n | 'false' | Should the system also attach the uploaded document to the email. |
 | MAILING_HOST | n | '' | The host of your mailing provider. |
@@ -121,9 +121,9 @@ Feeder Configuration Options
 | DOCUMENT_ERROR | n | /data/error/documents | In case of an error, where do we put the uploaded file?|
 | DOCUMENT_PROCESSED | n | /data/processed/documents | The place to store processed documents. |
 | DOCUMENT_BACKUP | n | false | Should we move the new document to the processed document folder. If false, the document will be deleted. |
-| TASK_INPUT | n | /data/input/tasks | The place to watch for new tasks. | 
-| TASK_IGNORED | n | /data/ignored/tasks | Where do we put ignored tasks? | 
-| TASK_ERROR | n | /data/errors/tasks | In case of an error, where do we put the uploaded file?| 
-| TASK_PROCESSED | n | /data/processed/tasks | The place to store processed tasks. |
-| TASK_BACKUP | n | false |  Should we move the new tasks to the processed tasks folder. If false, the task document will be deleted.  |
+| TASK_INPUT | n | /data/input/com.dedicatedcode.paperspace.feeder.tasks | The place to watch for new com.dedicatedcode.paperspace.feeder.tasks. | 
+| TASK_IGNORED | n | /data/ignored/com.dedicatedcode.paperspace.feeder.tasks | Where do we put ignored com.dedicatedcode.paperspace.feeder.tasks? | 
+| TASK_ERROR | n | /data/errors/com.dedicatedcode.paperspace.feeder.tasks | In case of an error, where do we put the uploaded file?| 
+| TASK_PROCESSED | n | /data/processed/com.dedicatedcode.paperspace.feeder.tasks | The place to store processed com.dedicatedcode.paperspace.feeder.tasks. |
+| TASK_BACKUP | n | false |  Should we move the new com.dedicatedcode.paperspace.feeder.tasks to the processed com.dedicatedcode.paperspace.feeder.tasks folder. If false, the task document will be deleted.  |
 | OCR_LANGUAGE | n | deu |  The language code used for OCR. |

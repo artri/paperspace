@@ -27,7 +27,6 @@ public class DocumentService {
         this.binaryService = binaryService;
     }
 
-    
     public Document store(Document document) {
         this.jdbcTemplate.update("INSERT INTO documents(id, created_at, title, description, binary_id, content,type, state, due_at,done_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
                 document.getId().toString(),
@@ -67,6 +66,7 @@ public class DocumentService {
                 document.getContent(),
                 document.getId().toString());
         this.jdbcTemplate.update("DELETE FROM pages WHERE document_id = ?", document.getId().toString());
+        storeTags(document);
         storePages(document);
     }
 
@@ -81,7 +81,13 @@ public class DocumentService {
                 nullableTimestamp(document.getDoneAt()),
                 document.getId().toString());
         this.jdbcTemplate.update("DELETE FROM pages WHERE document_id = ?", document.getId().toString());
+        storeTags(document);
         storePages(document);
+    }
+
+    private void storeTags(Document document) {
+        this.jdbcTemplate.update("DELETE FROM documents_tags WHERE document_id = ?", document.getId().toString());
+        document.getTags().forEach(tag -> this.jdbcTemplate.update("INSERT INTO documents_tags(document_id, tag_id) VALUES (?,?)", document.getId().toString(), tag.getId().toString()));
     }
 
     public Document getDocument(UUID id) {
@@ -91,6 +97,15 @@ public class DocumentService {
                 .findFirst()
                 .map(this::toDocument).orElse(null);
     }
+
+    public Document getByBinary(UUID binaryId) {
+        return this.jdbcTemplate.query("SELECT * FROM documents WHERE binary_id = ?", this::mapDocumentRow
+                , binaryId.toString())
+                .stream()
+                .findFirst()
+                .map(this::toDocument).orElse(null);
+    }
+
 
     private void storePages(Document document) {
         document.getPages().forEach(page -> this.jdbcTemplate.update("INSERT INTO pages(id,number,text,document_id,binary_id) VALUES (?,?,?,?,?)",
@@ -117,6 +132,7 @@ public class DocumentService {
                         rs.getInt("number"),
                         rs.getString("text"),
                         binaryService.get(UUID.fromString(rs.getString("binary_id")))), documentDataHolder.id.toString());
+        List<Tag> tags = this.jdbcTemplate.query("SELECT * FROM tags WHERE id IN (SELECT tag_id FROM documents_tags WHERE document_id = ?)", (rs, rowNum) -> new Tag(UUID.fromString(rs.getString("id")), rs.getString("name")), documentDataHolder.id.toString());
         switch (documentDataHolder.documentType) {
             case "DOCUMENT":
                 return new Document(
@@ -126,7 +142,8 @@ public class DocumentService {
                         documentDataHolder.description,
                         mainBinary,
                         documentDataHolder.content,
-                        pages);
+                        pages,
+                        tags);
             case "TASK":
                 return new TaskDocument(
                         documentDataHolder.id,
@@ -138,7 +155,8 @@ public class DocumentService {
                         documentDataHolder.content,
                         pages,
                         documentDataHolder.dueAt,
-                        documentDataHolder.doneAt);
+                        documentDataHolder.doneAt,
+                        tags);
             default:
                 throw new IllegalStateException("Unexpected value: " + documentDataHolder.documentType);
         }
@@ -160,6 +178,7 @@ public class DocumentService {
     public void delete(Document document) {
         document.getPages().forEach(page -> this.jdbcTemplate.update("DELETE FROM pages WHERE id = ?", page.getId().toString()));
         this.jdbcTemplate.update("DELETE FROM documents WHERE id = ?", document.getId().toString());
+        this.jdbcTemplate.update("DELETE from documents_tags WHERE document_id = ?", document.getId().toString());
     }
 
     private static class DocumentDataHolder {
