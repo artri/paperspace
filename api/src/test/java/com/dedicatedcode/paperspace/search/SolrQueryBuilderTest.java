@@ -16,29 +16,29 @@ class SolrQueryBuilderTest {
 
     @Test
     void shouldBuildSimpleQuery() {
-        assertEquals("+(title:2020^10 OR description:2020^5 OR content:2020^2)", builder.build("2020"));
+        assertEquals("+(title:\"2020\"^10 OR description:\"2020\"^5 OR content:\"2020\"^2)", builder.build("2020"));
     }
 
     @Test
     void shouldBuildAndQuery() {
-        assertEquals("+(title:2020^10 OR description:2020^5 OR content:2020^2)\n" +
-                "+(title:test^10 OR description:test^5 OR content:test^2)", builder.build("2020 +Test"));
+        assertEquals("+(title:\"2020\"^10 OR description:\"2020\"^5 OR content:\"2020\"^2)\n" +
+                "+(title:\"test\"^10 OR description:\"test\"^5 OR content:\"test\"^2)", builder.build("2020 +Test"));
     }
 
     @Test
     void shouldBuildNotQuery() {
-        assertEquals("+(title:2020^10 OR description:2020^5 OR content:2020^2)\n" +
-                "-(title:test^10 OR description:test^5 OR content:test^2)", builder.build("2020 -Test"));
+        assertEquals("+(title:\"2020\"^10 OR description:\"2020\"^5 OR content:\"2020\"^2)\n" +
+                "-(title:\"test\"^10 OR description:\"test\"^5 OR content:\"test\"^2)", builder.build("2020 -Test"));
     }
 
     @Test
     void shouldHandleDashInQueryString() {
-        assertEquals("+(title:sachversicherungs-ag^10 OR description:sachversicherungs-ag^5 OR content:sachversicherungs-ag^2)",
+        assertEquals("+(title:\"sachversicherungs-ag\"^10 OR description:\"sachversicherungs-ag\"^5 OR content:\"sachversicherungs-ag\"^2)",
                 builder.build("Sachversicherungs-AG"));
     }
 
     @Test
     void shouldEscapeSpecialCharactersBuildNotQuery() {
-        assertEquals("+(title:+\\(2020\\) -test^10 OR description:+\\(2020\\) -test^5 OR content:+\\(2020\\) -test^2)", builder.build("\\+(2020) \\-Test"));
+        assertEquals("+(title:\"+\\(2020\\) -test\"^10 OR description:\"+\\(2020\\) -test\"^5 OR content:\"+\\(2020\\) -test\"^2)", builder.build("\\+(2020) \\-Test"));
     }
 }
