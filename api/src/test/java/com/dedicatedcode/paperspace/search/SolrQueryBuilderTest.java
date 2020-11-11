@@ -39,7 +39,7 @@ class SolrQueryBuilderTest {
 
     @Test
     void shouldHandleDashInQueryString() {
-        assertEquals("+(title:sachversicherungs-ag^10 OR description:sachversicherungs-ag^5 OR content:sachversicherungs-ag^2)",
+        assertEquals("+(title:\"sachversicherungs-ag\"^10 OR description:\"sachversicherungs-ag\"^5 OR content:\"sachversicherungs-ag\"^2)",
                 builder.build("Sachversicherungs-AG"));
     }
 
