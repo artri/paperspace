@@ -178,6 +178,7 @@ public class DocumentService {
     public void delete(Document document) {
         document.getPages().forEach(page -> this.jdbcTemplate.update("DELETE FROM pages WHERE id = ?", page.getId().toString()));
         this.jdbcTemplate.update("DELETE FROM documents WHERE id = ?", document.getId().toString());
+        this.jdbcTemplate.update("DELETE from documents_tags WHERE document_id = ?", document.getId().toString());
     }
 
     private static class DocumentDataHolder {

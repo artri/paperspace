@@ -132,7 +132,9 @@ public class SolrService {
                     } else {
                         UUID id = UUID.fromString(count.getName());
                         Tag tag = this.tagService.get(id);
-                        tags.add(new SearchResponse.TagFacet(tag.getId(), tag.getName(), count.getCount(), tagIds != null && tagIds.contains(id)));
+                        if (tag != null) {
+                            tags.add(new SearchResponse.TagFacet(tag.getId(), tag.getName(), count.getCount(), tagIds != null && tagIds.contains(id)));
+                        }
                     }
                 });
             }

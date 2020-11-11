@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 ENV LANG C.UTF-8
-RUN apt-get update && apt-get install -yyy openjdk-14-jre tesseract-ocr
+RUN apt-get update && apt-get install -yyy openjdk-14-jre tesseract-ocr curl
 ENV spring_profiles_active=docker
 
 EXPOSE 8080

@@ -16,7 +16,10 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -136,9 +139,12 @@ public class MergingFileEventHandler {
             log.info("registered event for file [{}] with hash [{}]", file, hash);
             String finalHash = hash;
             synchronized (queuedFileEvents) {
-                List<FileEvent> updatedList = this.queuedFileEvents.stream().filter(event -> !event.getHash().equals(finalHash)).collect(Collectors.toList());
-                FileEvent storedEvent = this.queuedFileEvents.stream().filter(event -> event.getHash().equals(finalHash)).findFirst().orElse(null);
+                List<FileEvent> updatedList = this.queuedFileEvents.stream().filter(event -> !event.getHash().equals(finalHash) && !event.getFile().equals(file)).collect(Collectors.toList());
+                FileEvent storedEventByHash = this.queuedFileEvents.stream().filter(event -> event.getHash().equals(finalHash)).findFirst().orElse(null);
+                FileEvent storedEventByFileName = this.queuedFileEvents.stream().filter(event -> event.getFile().equals(file)).findFirst().orElse(null);
 
+                log.debug("Found existing event by hash [{}] or fileName [{}] for file[{}]", storedEventByHash, storedEventByFileName, file);
+                FileEvent storedEvent = storedEventByHash != null ? storedEventByHash : storedEventByFileName;
                 if (storedEvent != null) {
                     EventType storedType = storedEvent.getEventType();
                     if (storedType == DELETE && eventType == CREATE) {
@@ -149,7 +155,7 @@ public class MergingFileEventHandler {
                         updatedList.add(new FileEvent(inputType, MOVE, storedEvent.getFile(), LocalDateTime.now(), hash));
                     } else if (eventType == CHANGE) {
                         log.info("CHANGED event received for [{}] and [{}] event retrieved for [{}]. Will update time", file, storedEvent.getEventType(), storedEvent.getFile());
-                        updatedList.add(new FileEvent(inputType, storedType, file, LocalDateTime.now(), hash));
+                        updatedList.add(new FileEvent(inputType, storedEvent.getEventType(), file, LocalDateTime.now(), hash));
                     } else if (storedType == EXISTING) {
                         FileEvent fileEvent = new FileEvent(inputType, eventType, file, LocalDateTime.now(), hash);
                         log.info("Event [{}] received and stored event was [{}]", fileEvent, storedEvent);
