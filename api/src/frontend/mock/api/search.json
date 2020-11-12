@@ -1631,12 +1631,6 @@
       "active": true
     },
     {
-      "id": "2",
-      "name": "Daniela",
-      "count": 1,
-      "active": false
-    },
-    {
       "id": "3",
       "name": "Daniel",
       "count": 0,

@@ -198,6 +198,8 @@ function SearchController(config) {
 
     function updateTags(tagValues) {
         const tagContainer = $('#tags');
+        $('.name span:nth-child(2)', tagContainer).text('');
+        $('button', tagContainer).removeClass('active');
         for (const tagValue of tagValues) {
             const tagValueContainer = $(`[data-id=${tagValue.id}]`, tagContainer);
             if (tagValueContainer.length > 0) {
