@@ -74,4 +74,4 @@ test {
     useJUnitPlatform()
 }
 
-build.dependsOn gulp_dist
+processResources.dependsOn gulp_dist
