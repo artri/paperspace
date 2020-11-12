@@ -38,12 +38,6 @@ class SolrQueryBuilderTest {
     }
 
     @Test
-    void shouldHandleDashInQueryString() {
-        assertEquals("+(title:\"sachversicherungs-ag\"^10 OR description:\"sachversicherungs-ag\"^5 OR content:\"sachversicherungs-ag\"^2)",
-                builder.build("Sachversicherungs-AG"));
-    }
-
-    @Test
     void shouldEscapeSpecialCharactersBuildNotQuery() {
         assertEquals("+(title:\"+\\(2020\\) -test\"^10 OR description:\"+\\(2020\\) -test\"^5 OR content:\"+\\(2020\\) -test\"^2)", builder.build("\\+(2020) \\-Test"));
     }
