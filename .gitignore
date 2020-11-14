@@ -11,3 +11,5 @@
 /local-data/
 /docs/build/
 /paperspace.db
+/paperspace.db-shm
+/paperspace.db-wal

@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   api:
-    image: dedicatedcode/paperspace:latest
+    image: dedicatedcode/paperspace:v2.0.0
     depends_on:
       - search
     restart: unless-stopped
@@ -19,7 +19,7 @@ services:
     ports:
       - 8080:8080
   search:
-    image: dedicatedcode/paperspace-search:latest
+    image: dedicatedcode/paperspace-search:v2.0.0
     restart: unless-stopped
     volumes:
       - paperspace-search:/data/solr
