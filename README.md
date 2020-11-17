@@ -3,9 +3,17 @@
 a small web application to manage all your offline documents. 
 Provides a searchable storage for your documents and reminds you of upcoming com.dedicatedcode.paperspace.feeder.tasks.
 
-![screenshot of the start page](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/5c02cb86506303adacbd1fb3bbf6decc/screenshot-2020-06-06-05_29_57.png)
+**start page** 
+![starting page](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/ce8bc924b49b471c607630fd411397d4/start.png)
+
+**task view** 
+![task view](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/9b60074d218dd9e4f087efa88d4757f1/task_done.png)
+
+**search results** 
+![search results](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/d36cb6bbfa63e38d5304203d5b1ae499/search_results.png)
 
 More screenshots of the current state can be found in the [wiki](https://gitlab.com/dedicatedcode/paperspace/-/wikis/Screenshots)
+
 ## Introduction
 what can it do:
 - provides a searchable storage for your documents 
@@ -32,98 +40,7 @@ Inspired by
 - [Paperless](https://github.com/the-paperless-project/paperless) 
 - [Mayan EDMS](https://www.mayan-edms.com/) 
 
-## Deployment
+## documentation and installation instructions
 
-the easiest solution is to adjust the provided docker-compose file and deploy the whole stack.
-It is also possible to build booth applications and deploy them on a server or locally.
+Documentation of paper{s}pace and installation instructions can be found on [dedicatedcode.com](https://www.dedicatedcode.com/projects.html)
 
-### source
-
-A detailed explanation how to install the application from the source on a Ubuntu Server can be found at [Documentation](https://paperspace.readthedocs.io/en/latest/contents.html#bare-metal-installation-from-source)
-### docker
- 
-1. checkout the project
-    ```shell script
-    git clone git@gitlab.com:dedicatedcode/paperspace.git
-    ```
-2. navigate to the deployment folder
-3. copy the provided **env-sample** to **.env**. This will contain all your passwords and usernames.
-    ```shell script
-    cp env-sample .env
-    ```
-4. adjust **.env** to your requirements.
-5. adjust the **docker-compose.yml** file to your environment. Especially the ports section of the api. You can find all available configuration options in th section [docker configuration](#docker-configuration).
-6. run the stack with docker compose or deploy it in your docker swarm
-   ```shell script
-    docker-compose up -d
-    ``` 
-   or for docker swarm
-   ```shell script
-    docker stack deploy --compose-file docker-compose.yml paperspace
-    ```
-    after the application is running you should be able to open the app through the port specified in the api service.
-    For example if you mapped port 8080, then navigate to http://localhost:8080
-    
-There is also a minimal docker-compose file where only the options needed are set for reference.
-    
-### example docker stacks
-
-#### complete stack including all available configuration options
-This stack deploys the whole application (api,feeder,search and database). Use this if you have already a way to drop files into the watched folders.
-
-[docker-compose.yml](https://gitlab.com/dedicatedcode/paperspace/-/blob/master/deployment/examples/docker-compose.yml)
-
-#### minimal stack
-This stack deploys the whole application (api,feeder,search and database). But with only the bare minimum of required configuration options.
-This stack does not send emails on an upload of a document. It also does not send reminder emails. 
-
-[docker-compose.yml](https://gitlab.com/dedicatedcode/paperspace/-/blob/master/deployment/examples/minimal-docker-compose.yml)
-
-#### stack including a preconfigured ftp server
-This stack comes with a ftp server which listens on port 21 incl. PASV support. 
-You can either upload documents or com.dedicatedcode.paperspace.feeder.tasks directly via ftp or setup your document scanner to upload the scanned PDF´s in the appropriate folders.
-
-[docker-compose.yml](https://gitlab.com/dedicatedcode/paperspace/-/blob/master/deployment/examples/complete-with-ftp.yml)
-
-### docker configuration
-API Configuration Options
-
-| key | mandatory | default value | description |
-|-----|-----------|---------------|-------------|
-| APPLICATION_HOST | y | http://localhost:8080 | the URL under which the application is reachable. Used to provide working links in emails. |
-| DB_HOST | n | 'db' | The host of the database to connect to. |
-| DB_PORT | n | '3306' | The port of your database. |
-| DB_TABLE | y | '' | Name of your database. |
-| DB_USER | y | '' | User used to connect to the database. |
-| DB_PASSWORD | y | '' | Password to connect to your database. |
-| SEARCH_HOST | n | 'search' | Hostname of the solr instance. |
-| SEARCH_PORT | n | '8983' | Port of the solr instance. |
-| STORAGE_PATH | n | '/binary' | where do we store the uploaded binary files. This is also the folder you should backup. |
-| ENABLE_MAIL | n | 'false' | Is sending emails enabled. If enabled all the other properties starting handling mails should be set.|
-| MAIL_TO_ADDRESS | n | '' | Who receives notifications about new documents or upcoming com.dedicatedcode.paperspace.feeder.tasks?|
-| MAIL_FROM_ADDRESS | n | '' | In which name should the system send out emails. |
-| MAIL_ATTACH_DOCUMENTS | n | 'false' | Should the system also attach the uploaded document to the email. |
-| MAILING_HOST | n | '' | The host of your mailing provider. |
-| MAILING_PORT | n | 587 | The port of your mailing provider. |
-| MAILING_PROTOCOL | n | 'smtp' | The protocoll the app should use. |
-| MAILING_SMTP_AUTH | n | 'yes' | Should we login? |
-| MAILING_SMTP_USE_STARTTLS | n | 'yes' | Should we use starttls? |
-| MAILING_USERNAME | n | '' | Username provided by your mailing provider. |
-| MAILING_PASSWORD | n | ''| Password used to login to your mailing provider.|
-
-Feeder Configuration Options
-
-| key | mandatory | default value | description |
-|-----|-----------|---------------|-------------|
-| API_URL | n | http://api:8080 | How to reach the api?|
-| DOCUMENT_INPUT | n | /data/input/documents | The place to watch for new documents. |
-| DOCUMENT_IGNORED | n | /data/ignored/documents | Where do we put ignored documents? |
-| DOCUMENT_ERROR | n | /data/error/documents | In case of an error, where do we put the uploaded file?|
-| DOCUMENT_PROCESSED | n | /data/processed/documents | The place to store processed documents. |
-| DOCUMENT_BACKUP | n | false | Should we move the new document to the processed document folder. If false, the document will be deleted. |
-| TASK_INPUT | n | /data/input/com.dedicatedcode.paperspace.feeder.tasks | The place to watch for new com.dedicatedcode.paperspace.feeder.tasks. | 
-| TASK_IGNORED | n | /data/ignored/com.dedicatedcode.paperspace.feeder.tasks | Where do we put ignored com.dedicatedcode.paperspace.feeder.tasks? | 
-| TASK_ERROR | n | /data/errors/com.dedicatedcode.paperspace.feeder.tasks | In case of an error, where do we put the uploaded file?| 
-| TASK_PROCESSED | n | /data/processed/com.dedicatedcode.paperspace.feeder.tasks | The place to store processed com.dedicatedcode.paperspace.feeder.tasks. |
-| TASK_BACKUP | n | false |  Should we move the new com.dedicatedcode.paperspace.feeder.tasks to the processed com.dedicatedcode.paperspace.feeder.tasks folder. If false, the task document will be deleted.  |
-| OCR_LANGUAGE | n | deu |  The language code used for OCR. |
