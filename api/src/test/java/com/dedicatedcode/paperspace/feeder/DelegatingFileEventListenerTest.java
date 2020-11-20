@@ -40,7 +40,7 @@ class DelegatingFileEventListenerTest {
         this.documentService = mock(DocumentService.class);
         this.binaryService = mock(BinaryService.class);
         List<DocumentListener> documentListeners = Collections.emptyList();
-        this.listener = new DelegatingFileEventListener(binaryService, documentService, storageService, solrService, ocrService, 14, documentListeners);
+        this.listener = new DelegatingFileEventListener(binaryService, documentService, storageService, solrService, Collections.singletonList(ocrService), 14, documentListeners);
     }
 
     @Test

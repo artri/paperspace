@@ -30,7 +30,7 @@ public class DelegatingFileEventListener implements FileEventListener {
     private final DocumentService documentService;
     private final StorageService storageService;
     private final SolrService solrService;
-    private final OcrService ocrService;
+    private final List<OcrService> ocrServices;
     private final int defaultDuePeriod;
     private final List<DocumentListener> documentListeners;
 
@@ -38,13 +38,13 @@ public class DelegatingFileEventListener implements FileEventListener {
                                        DocumentService documentService,
                                        StorageService storageService,
                                        SolrService solrService,
-                                       PdfOcrService ocrService,
+                                       List<OcrService> ocrServices,
                                        @Value("${task.defaultDuePeriod}") int defaultDuePeriod, List<DocumentListener> documentListeners) {
         this.binaryService = binaryService;
         this.documentService = documentService;
         this.storageService = storageService;
         this.solrService = solrService;
-        this.ocrService = ocrService;
+        this.ocrServices = ocrServices;
         this.defaultDuePeriod = defaultDuePeriod;
         this.documentListeners = documentListeners;
     }
@@ -90,7 +90,7 @@ public class DelegatingFileEventListener implements FileEventListener {
         log.info("new file detected. Will doing ocr, creation of screenshots and storing everything in the database");
         String md5 = getHashFromFile(file);
         try {
-            List<Page> pages = ocrService.doOcr(file);
+            List<Page> pages = doOcr(file);
             LocalDateTime now = LocalDateTime.now();
             Binary documentBinary = new Binary(UUID.randomUUID(), now, file.getAbsolutePath(), md5, loadMimeType(file), file.length());
             this.binaryService.store(documentBinary);
@@ -112,6 +112,17 @@ public class DelegatingFileEventListener implements FileEventListener {
         } catch (OcrException e) {
             log.error("processing of [{}] failed with:", file, e);
         }
+    }
+
+    private List<Page> doOcr(File file) throws OcrException {
+        String mimeType = FileTypes.loadMimeType(file);
+        log.debug("Searching for a an ocr handler for [{}] with mimeType [{}]", file, mimeType);
+        for (OcrService ocrService : ocrServices) {
+            if (ocrService.supports(mimeType)) {
+                return ocrService.doOcr(file);
+            }
+        }
+        throw new OcrException("Unhandled file format detected for [" + file + "]");
     }
 
     private String getHashFromFile(File file) {
@@ -147,7 +158,7 @@ public class DelegatingFileEventListener implements FileEventListener {
             log.error("could not calculate md5 sum of [{}]", file);
         }
         try {
-            List<Page> pages = ocrService.doOcr(file);
+            List<Page> pages = doOcr(file);
             Document updatedDocument = associatedDocument.withPages(pages);
             this.documentService.update(updatedDocument);
             this.solrService.index(updatedDocument);

@@ -6,7 +6,6 @@ import com.dedicatedcode.paperspace.model.Binary;
 import com.dedicatedcode.paperspace.model.Page;
 import com.recognition.software.jdeskew.ImageDeskew;
 import net.coobird.thumbnailator.Thumbnails;
-import net.sf.jmimemagic.*;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import net.sourceforge.tess4j.util.ImageHelper;
@@ -26,7 +25,9 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,11 @@ public class PdfOcrService implements OcrService {
         this.storageService = storageService;
         this.ocrLanguage = ocrLanguage;
         this.ocrDataPath = ocrDataPath;
+    }
+
+    @Override
+    public boolean supports(String mimeType) {
+        return mimeType.contains("pdf");
     }
 
     @Override
@@ -90,7 +96,7 @@ public class PdfOcrService implements OcrService {
                 File previewImageFile = File.createTempFile("paper{s}pace-preview", ".png");
                 log.debug("writing preview image for page to [{}]", previewImageFile);
                 if (writeImageFile(originalPageImage, "png", previewImageFile)) {
-                    String mimeType = loadMimeType(previewImageFile);
+                    String mimeType = FileTypes.loadMimeType(previewImageFile);
                     Binary imageBinary = this.storageService.store(UploadType.IMAGE, previewImageFile, "ps_preview_image_" + UUID.randomUUID() + ".png", mimeType);
                     pages.add(new Page(UUID.randomUUID(), pageCounter, pageText, imageBinary));
                 }
@@ -100,6 +106,7 @@ public class PdfOcrService implements OcrService {
             throw new OcrException(e);
         }
     }
+
 
     private boolean writeImageFile(BufferedImage image, String format, File previewImageFile) throws IOException {
         ImageWriter writer = ImageIO.getImageWritersByFormatName(format).next();
@@ -130,13 +137,5 @@ public class PdfOcrService implements OcrService {
         stream.close();
         return true;
     }
-    private String loadMimeType(File path) {
-        try {
-            MagicMatch magicMatch = Magic.getMagicMatch(path, true, false);
-            return magicMatch.getMimeType();
-        } catch (MagicParseException | MagicMatchNotFoundException | MagicException e) {
-            log.warn("could not extract mimeType of [{}], will assume octet-stream", path);
-            return "application/octet-stream";
-        }
-    }
+
 }
