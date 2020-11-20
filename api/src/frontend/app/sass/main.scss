@@ -13,6 +13,7 @@ $family-sans-serif: 'Roboto';
 @import "fonts";
 @import "flickity";
 @import "tags";
+@import "upload";
 
 .is-full-width {
   width: 100%;
@@ -93,4 +94,12 @@ aside,
   right: 0;
   margin: 24px;
   max-width: 400px;
+}
+
+
+.is-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
 }

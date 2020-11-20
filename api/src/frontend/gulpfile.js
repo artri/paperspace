@@ -3,7 +3,7 @@ const del = require('del');
 const sass = require('gulp-sass');
 const browserSync = require('browser-sync').create();
 const concat = require('gulp-concat');
-const cleanCSS = require('gulp-clean-css');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 
 function clean(cb) {
@@ -40,6 +40,22 @@ function serve(cb) {
     cb();
 }
 
+function serveDev(cb) {
+    const proxy = createProxyMiddleware('/api', {target: 'http://localhost:8080'});
+
+    browserSync.init({
+        server: "./app",
+        serveStatic: ['./app', './dist/'],
+        middleware: [proxy]
+    });
+
+    watch("app/sass/**/*.scss", series(css));
+    watch("app/js/**/*.js", series(js));
+    watch("app/font/**", series(font));
+    watch("app/*.html").on('change', browserSync.reload);
+    cb();
+}
+
 function copyToTarget(cb) {
     src('./dist/**')
         .pipe(dest('../../src/main/resources/static/'));
@@ -65,6 +81,7 @@ function js(cb) {
 }
 
 exports.serve = series(clean, parallel(css, js, font), serve);
+exports.serveDev = series(clean, parallel(css, js, font), serveDev);
 exports.build = series(clean, parallel(css, js, font));
 exports.dist = series(clean, cleanDist, parallel(css, js, font), copyToTarget);
 exports.default = serve;

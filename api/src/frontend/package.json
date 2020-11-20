@@ -19,6 +19,7 @@
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
     "gulp-sass": "^4.1.0",
+    "http-proxy-middleware": "^1.0.6",
     "json-server": "^0.16.1"
   },
   "dependencies": {

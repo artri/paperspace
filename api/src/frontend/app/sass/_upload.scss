@@ -1,0 +1,14 @@
+.upload-file {
+  width: 100%;
+  display: inline-grid;
+  grid-template-columns: 24px auto 150px;
+  padding: 8px;
+  & i {
+    padding-top: 4px;
+  }
+}
+
+.upload-progress {
+  height: 6px;
+  border-radius: 3px;
+}
