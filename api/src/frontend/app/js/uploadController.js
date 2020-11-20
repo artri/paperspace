@@ -1,7 +1,6 @@
 function UploadController(config) {
     const configuration = config;
 
-
     this.init = function () {
         const fileInput = $(configuration.input);
         fileInput.on('change', function () {
@@ -51,10 +50,9 @@ function UploadController(config) {
         for (const file of files) {
             const fileId = file.id;
             const progressIndicator = $(`#progress-${fileId}`);
-            const filenameLabel = $(`#filename-${fileId}`);
-            var xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest();
             xhr.upload.onprogress = function (e) {
-                var percent = (e.loaded / e.total);
+                const percent = (e.loaded / e.total);
                 progressIndicator.css('width', `${percent * 100}%`);
                 const filenameLabel = $(`#filename-${fileId}`);
                 filenameLabel.replaceWith(`
@@ -64,7 +62,7 @@ function UploadController(config) {
                             <div>${Math.trunc(percent * 100)}%</div>
                         </div>`)
             };
-            xhr.onreadystatechange = function (e) {
+            xhr.onreadystatechange = function () {
                 if (this.readyState === 4) {
                     const filenameLabel = $(`#filename-${fileId}`);
                     if (this.status === 201) {
@@ -95,8 +93,7 @@ function UploadController(config) {
                 }
             };
 
-            var formData = new FormData();
-
+            const formData = new FormData();
             formData.append("fileName", file.file.name);
             formData.append("type", type);
             formData.append("file", file.file);
@@ -105,6 +102,5 @@ function UploadController(config) {
             xhr.open('POST', '/api/binary', true);
             xhr.send(formData);
         }
-
     }
 }
