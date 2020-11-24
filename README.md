@@ -4,13 +4,13 @@ a small web application to manage all your offline documents.
 Provides a searchable storage for your documents and reminds you of upcoming com.dedicatedcode.paperspace.feeder.tasks.
 
 **start page** 
-![starting page](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/ce8bc924b49b471c607630fd411397d4/start.png)
+![starting page](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/db7a4422094235adb46bb9e933a5f507/main.png)
 
 **task view** 
-![task view](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/9b60074d218dd9e4f087efa88d4757f1/task_done.png)
+![task view](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/fef4451040a37306a4eaff7dc92013cd/task-view.png)
 
 **search results** 
-![search results](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/d36cb6bbfa63e38d5304203d5b1ae499/search_results.png)
+![search results](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/3ce55e7710aa8b15109bcf794962cde0/search-results.png)
 
 More screenshots of the current state can be found in the [wiki](https://gitlab.com/dedicatedcode/paperspace/-/wikis/Screenshots)
 
