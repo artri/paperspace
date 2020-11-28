@@ -2,6 +2,7 @@ package com.dedicatedcode.paperspace;
 
 import com.dedicatedcode.paperspace.model.Binary;
 import com.dedicatedcode.paperspace.model.Document;
+import com.dedicatedcode.paperspace.model.OCRState;
 import com.dedicatedcode.paperspace.model.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +13,11 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class LocalStorageService implements StorageService {
@@ -78,7 +80,7 @@ public class LocalStorageService implements StorageService {
             }
             log.info("stored binary under [{}] with original file name [{}]", outputFile, originalFileName);
             return new Binary(UUID.randomUUID(), LocalDateTime.now(), outputFile.getAbsolutePath(), md5, mimeType,
-                    Files.size(outputFile.toPath()));
+                    Files.size(outputFile.toPath()), type == UploadType.IMAGE ? OCRState.UNNECESSARY : OCRState.OPEN);
         } catch (IOException e) {
             throw new StorageException(e);
         }

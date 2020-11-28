@@ -131,26 +131,4 @@ public class DocumentController {
     public ErrorResponse handle(IllegalArgumentException ex) {
         return new ErrorResponse(ex.getMessage(), 400);
     }
-
-    static class DocumentUpload {
-        private String title;
-        private UUID binaryId;
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public UUID getBinaryId() {
-            return binaryId;
-        }
-
-        public void setBinaryId(UUID binaryId) {
-            this.binaryId = binaryId;
-        }
-    }
-
 }

@@ -114,7 +114,7 @@ class DocumentServiceTest {
                 System.getProperty("java.io.tmpdir") + File.separatorChar + UUID.randomUUID() + ".pdf",
                 UUID.randomUUID().toString(),
                 "application/pdf",
-                100);
+                100, OCRState.OPEN);
         this.binaryService.store(binary);
         return binary;
     }

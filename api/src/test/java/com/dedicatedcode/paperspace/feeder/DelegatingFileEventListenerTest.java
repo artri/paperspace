@@ -50,7 +50,7 @@ class DelegatingFileEventListenerTest {
 
         when(this.binaryService.getByPath(targetFile.getAbsolutePath())).thenReturn(null);
         when(this.binaryService.getByHash(anyString())).thenReturn(null);
-        Binary preview = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/storage/test.png", "12345", "image/png", 1);
+        Binary preview = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/storage/test.png", "12345", "image/png", 1, OCRState.UNNECESSARY);
         Page page = new Page(UUID.randomUUID(), 1, "Test Content", preview);
         when(this.ocrService.doOcr(targetFile)).thenReturn(Collections.singletonList(page));
 
@@ -76,7 +76,7 @@ class DelegatingFileEventListenerTest {
 
         when(this.binaryService.getByPath(targetFile.getAbsolutePath())).thenReturn(null);
         when(this.binaryService.getByHash(anyString())).thenReturn(null);
-        Binary preview = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/storage/test.png", "12345", "image/png", 1);
+        Binary preview = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/storage/test.png", "12345", "image/png", 1, OCRState.UNNECESSARY);
         Page page = new Page(UUID.randomUUID(), 1, "Test Content", preview);
         when(this.ocrService.doOcr(targetFile)).thenReturn(Collections.singletonList(page));
 
@@ -92,8 +92,8 @@ class DelegatingFileEventListenerTest {
     void shouldHandleDeletionOfFile() {
         File deletedFile = new File(UUID.randomUUID() + ".pdf");
 
-        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), deletedFile.getAbsolutePath(), "12345", "application/pdf", 1);
-        Binary storedPgeBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), deletedFile.getAbsolutePath(), "12345", "application/pdf", 1);
+        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), deletedFile.getAbsolutePath(), "12345", "application/pdf", 1, OCRState.OPEN);
+        Binary storedPgeBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), deletedFile.getAbsolutePath(), "12345", "application/pdf", 1, OCRState.OPEN);
         Document document = new Document(UUID.randomUUID(), LocalDateTime.now(), "Test Document", null, storedBinary,
                 Collections.singletonList(new Page(UUID.randomUUID(), 1, "Test Content", storedPgeBinary)), Collections.emptyList());
 
@@ -112,7 +112,7 @@ class DelegatingFileEventListenerTest {
     void shouldUpdateBinary() throws IOException {
         File targetFile = copyFile(UUID.randomUUID() + ".pdf");
 
-        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/some/old/path", "12345", "application/pdf", 1);
+        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/some/old/path", "12345", "application/pdf", 1, OCRState.OPEN);
 
         when(binaryService.getByPath(targetFile.getAbsolutePath())).thenReturn(null);
         when(binaryService.getByHash("e572fdbb0a1ce8d3b77c5f4e59db82fe")).thenReturn(storedBinary);
@@ -127,8 +127,8 @@ class DelegatingFileEventListenerTest {
     void shouldSwitchToTaskFromDocument() throws IOException {
         File targetFile = copyFile(UUID.randomUUID() + ".pdf");
 
-        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/some/old/path", "12345", "application/pdf", 1);
-        Binary storedPageBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), targetFile.getAbsolutePath(), "12345", "application/pdf", 1);
+        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/some/old/path", "12345", "application/pdf", 1, OCRState.OPEN);
+        Binary storedPageBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), targetFile.getAbsolutePath(), "12345", "application/pdf", 1, OCRState.OPEN);
         Document document = new Document(UUID.randomUUID(), LocalDateTime.now(), "Test Document", null, storedBinary,
                 Collections.singletonList(new Page(UUID.randomUUID(), 1, "Test Content", storedPageBinary)), Collections.emptyList());
 

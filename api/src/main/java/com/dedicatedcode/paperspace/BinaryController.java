@@ -1,6 +1,7 @@
 package com.dedicatedcode.paperspace;
 
 import com.dedicatedcode.paperspace.model.Binary;
+import com.dedicatedcode.paperspace.model.OCRState;
 import com.dedicatedcode.paperspace.web.BinaryResponse;
 import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
@@ -135,6 +136,30 @@ public class BinaryController {
                 .lastModified(loadedFile.lastModified())
                 .headers(headers)
                 .body(resource);
+    }
+
+    @PostMapping("/api/binary/{id}/delete")
+    @ResponseBody
+    public ResponseEntity<BinaryResponse> delete(@PathVariable UUID id) {
+        Binary binary = this.binaryService.get(id);
+        if (binary==null) {
+            throw new UnknownBinaryException("could not find binary with id ["+id+"]");
+        }
+        this.binaryService.delete(binary);
+        this.storageService.delete(binary.getStorageLocation());
+        return ResponseEntity.ok(new BinaryResponse(binary));
+    }
+
+    @PostMapping("/api/binary/{id}/ignore")
+    @ResponseBody
+    public ResponseEntity<BinaryResponse> ignore(@PathVariable UUID id) {
+        Binary binary = this.binaryService.get(id);
+        if (binary==null) {
+            throw new UnknownBinaryException("could not find binary with id ["+id+"]");
+        }
+        Binary newBinary = binary.withState(OCRState.IGNORED);
+        this.binaryService.update(newBinary);
+        return ResponseEntity.ok(new BinaryResponse(newBinary));
     }
 
     private String getScaledFileName(File originalFile, Integer width) {

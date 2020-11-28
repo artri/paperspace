@@ -9,14 +9,16 @@ public class Binary extends Identifiable{
     private final String hash;
     private final String mimeType;
     private final long length;
+    private final OCRState state;
 
-    public Binary(UUID id, LocalDateTime createdAt, String storageLocation, String hash, String mimeType, long length) {
+    public Binary(UUID id, LocalDateTime createdAt, String storageLocation, String hash, String mimeType, long length, OCRState state) {
         super(id);
         this.createdAt = createdAt;
         this.storageLocation = storageLocation;
         this.hash = hash;
         this.mimeType = mimeType;
         this.length = length;
+        this.state = state;
     }
 
     public String getMimeType() {
@@ -39,11 +41,19 @@ public class Binary extends Identifiable{
         return hash;
     }
 
+    public OCRState getState() {
+        return state;
+    }
+
     public Binary withStorageLocation(String storageLocation) {
-        return new Binary(getId(), createdAt, storageLocation, hash, mimeType, length);
+        return new Binary(getId(), createdAt, storageLocation, hash, mimeType, length, state);
     }
 
     public Binary withHash(String hash) {
-        return new Binary(getId(), createdAt, storageLocation, hash, mimeType, length);
+        return new Binary(getId(), createdAt, storageLocation, hash, mimeType, length, state);
+    }
+
+    public Binary withState(OCRState state) {
+        return new Binary(getId(), createdAt, storageLocation, hash, mimeType, length, state);
     }
 }

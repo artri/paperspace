@@ -92,7 +92,7 @@ public class DelegatingFileEventListener implements FileEventListener {
         try {
             List<Page> pages = doOcr(file);
             LocalDateTime now = LocalDateTime.now();
-            Binary documentBinary = new Binary(UUID.randomUUID(), now, file.getAbsolutePath(), md5, loadMimeType(file), file.length());
+            Binary documentBinary = new Binary(UUID.randomUUID(), now, file.getAbsolutePath(), md5, loadMimeType(file), file.length(), OCRState.PROCESSED);
             this.binaryService.store(documentBinary);
             pages.forEach(page -> this.binaryService.store(page.getPreview()));
 
@@ -110,6 +110,7 @@ public class DelegatingFileEventListener implements FileEventListener {
             this.documentListeners.forEach(documentListener -> documentListener.created(document));
             this.solrService.index(document);
         } catch (OcrException e) {
+            this.binaryService.store(new Binary(UUID.randomUUID(), LocalDateTime.now(), file.getAbsolutePath(), md5, loadMimeType(file), file.length(), OCRState.FAILED));
             log.error("processing of [{}] failed with:", file, e);
         }
     }

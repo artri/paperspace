@@ -102,7 +102,7 @@ public class PdfOcrService implements OcrService {
                 }
             }
             return pages;
-        } catch (IOException e) {
+        } catch (IllegalArgumentException | IOException e) {
             throw new OcrException(e);
         }
     }
