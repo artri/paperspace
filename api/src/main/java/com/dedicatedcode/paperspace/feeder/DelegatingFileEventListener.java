@@ -123,7 +123,7 @@ public class DelegatingFileEventListener implements FileEventListener {
                 return ocrService.doOcr(file);
             }
         }
-        throw new OcrException("Unhandled file format detected for [" + file + "]");
+        throw new OcrException("Unhandled file format [" + mimeType + "] detected for [" + file + "]");
     }
 
     private String getHashFromFile(File file) {

@@ -35,6 +35,7 @@ class DelegatingFileEventListenerTest {
     @BeforeEach
     void setUp() {
         this.ocrService = mock(PdfOcrService.class);
+        when(this.ocrService.supports(anyString())).thenReturn(true);
         this.solrService = mock(SolrService.class);
         this.storageService = mock(StorageService.class);
         this.documentService = mock(DocumentService.class);
