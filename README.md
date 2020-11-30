@@ -1,4 +1,5 @@
 # paper{s}pace
+[![pipeline status](https://gitlab.com/dedicatedcode/paperspace/badges/master/pipeline.svg)](https://gitlab.com/dedicatedcode/paperspace/-/commits/master) [![coverage report](https://gitlab.com/dedicatedcode/paperspace/badges/master/coverage.svg)](https://gitlab.com/dedicatedcode/paperspace/-/commits/master)
 
 a small web application to manage all your offline documents. 
 Provides a searchable storage for your documents and reminds you of upcoming com.dedicatedcode.paperspace.feeder.tasks.
