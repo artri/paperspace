@@ -13,7 +13,7 @@ build-api:
     - chmod u+x api/gradlew
   script:
     - cd api && ./gradlew build
-    - cat api/build/reports/jacoco/test/html/index.html
+    - cat build/reports/jacoco/test/html/index.html
   artifacts:
     expire_in: 1h
     paths:
