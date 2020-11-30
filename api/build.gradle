@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
     id 'idea'
+    id 'jacoco'
 }
 
 idea {
@@ -72,6 +73,13 @@ gulp {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport // report is always generated after tests run
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+    dependsOn test // tests are required to run before generating the report
+}
 processResources.dependsOn gulp_dist
