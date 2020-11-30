@@ -17,7 +17,7 @@ build-api:
     expire_in: 1h
     paths:
       - api/build/libs/api.jar
-      - api/build/reports/jacoco/jacocoTestReport.xml
+      - api/build/reports/jacoco/test/jacocoTestReport.xml
 
 coverage-jdk11:
   # Must be in a stage later than test-jdk11's stage.
@@ -27,7 +27,7 @@ coverage-jdk11:
   image: haynes/jacoco2cobertura:1.0.4
   script:
     # convert report from jacoco to cobertura
-    - 'python /opt/cover2cover.py api/build/reports/jacoco/jacocoTestReport.xml api/src/main/java > build/cobertura.xml'
+    - 'python /opt/cover2cover.py api/build/reports/jacoco/test/jacocoTestReport.xml api/src/main/java > build/cobertura.xml'
     # read the <source></source> tag and prepend the path to every filename attribute
     - 'python /opt/source2filename.py build/cobertura.xml'
   needs: ["build-api"]
