@@ -2,7 +2,7 @@
 [![pipeline status](https://gitlab.com/dedicatedcode/paperspace/badges/master/pipeline.svg)](https://gitlab.com/dedicatedcode/paperspace/-/commits/master) [![coverage report](https://gitlab.com/dedicatedcode/paperspace/badges/master/coverage.svg)](https://gitlab.com/dedicatedcode/paperspace/-/commits/master)
 
 a small web application to manage all your offline documents. 
-Provides a searchable storage for your documents and reminds you of upcoming com.dedicatedcode.paperspace.feeder.tasks.
+Provides a searchable storage for your documents and reminds you of upcoming tasks.
 
 **start page** 
 ![starting page](https://gitlab.com/dedicatedcode/paperspace/-/wikis/uploads/db7a4422094235adb46bb9e933a5f507/main.png)
@@ -19,8 +19,8 @@ More screenshots of the current state can be found in the [wiki](https://gitlab.
 what can it do:
 - provides a searchable storage for your documents 
 - easy to install and use
-- stores automatically documents or com.dedicatedcode.paperspace.feeder.tasks placed in specific folders
-- com.dedicatedcode.paperspace.feeder.tasks have a due date associated, and you will be reminded before the date is approaching by mail
+- stores automatically documents or tasks placed in specific folders
+- tasks have a due date associated, and you will be reminded before the date is approaching by mail
 
 what is it **not** (and probably never be)
 - not a full sized business application
@@ -33,7 +33,7 @@ I was getting tired of having to store all my offline documents and then can´t 
 After trying multiple solutions for this problem and not finding a simple one I decided to tackle that on my own.
 
 So my workflow with paper{s}pace:
-- scan a document with my [Brother-ADS-1100W](https://www.amazon.de/Brother-ADS-1100W-Dokumentenscanner-Duplex-schwarz/dp/B00GHUCKBY) which uploads it via ftp in either the documents- or com.dedicatedcode.paperspace.feeder.tasks-folder.
+- scan a document with my [Brother-ADS-1100W](https://www.amazon.de/Brother-ADS-1100W-Dokumentenscanner-Duplex-schwarz/dp/B00GHUCKBY) which uploads it via ftp in either the documents- or tasks-folder.
 - get a mail when the processing is done and i can open the document directly from my browser and print it or add some metadata. 
 - if it is a task, then the app will remind me when the task needs attention (I´m terrible at remembering that stuff).
 

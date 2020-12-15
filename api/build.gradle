@@ -60,7 +60,7 @@ node {
 }
 
 bootJar {
-    archiveName = 'api.jar'
+    archiveFileName = 'api.jar'
 }
 // run gulp install
 gulp_dist.dependsOn 'installGulp'
