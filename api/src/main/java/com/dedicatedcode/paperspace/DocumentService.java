@@ -39,6 +39,7 @@ public class DocumentService {
                 null,
                 null,
                 null);
+        storeTags(document);
         storePages(document);
         return document;
     }
@@ -55,6 +56,7 @@ public class DocumentService {
                 document.getState().toString(),
                 nullableTimestamp(document.getDueAt()),
                 nullableTimestamp(document.getDoneAt()));
+        storeTags(document);
         storePages(document);
         return document;
     }
@@ -161,6 +163,7 @@ public class DocumentService {
                 throw new IllegalStateException("Unexpected value: " + documentDataHolder.documentType);
         }
     }
+
     private DocumentDataHolder mapDocumentRow(ResultSet rs, int rowNum) throws SQLException {
         return new DocumentDataHolder(
                 UUID.fromString(rs.getString("id")),

@@ -8,10 +8,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.dedicatedcode.paperspace.AssertionUtils.DateTimeComparePrecision.SECONDS;
 import static com.dedicatedcode.paperspace.AssertionUtils.assertDateTimeEquals;
@@ -26,6 +23,9 @@ class DocumentServiceTest {
 
     @Autowired
     private BinaryService binaryService;
+
+    @Autowired
+    private TagService tagService;
 
     @Test
     void shouldStoreEmptyDocument() {
@@ -106,6 +106,24 @@ class DocumentServiceTest {
         assertEquals("TEST CONTENT", storedDocument.getContent());
         assertEquals(1, storedDocument.getPages().size());
         assertEquals(page, storedDocument.getPages().get(0));
+    }
+
+    @Test
+    void shouldUnlinkTag() {
+        long currentUnassignedTags = this.tagService.getUnassignedTags().size();
+        Tag tag = new Tag(UUID.randomUUID(), "TAG_" + UUID.randomUUID());
+        this.tagService.store(tag);
+
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag);
+        TaskDocument taskDocument = new TaskDocument(UUID.randomUUID(), LocalDateTime.now(), "Test Task Title", null, storeBinary(), State.OPEN, Collections.emptyList(), null, null, tags);
+        TaskDocument storedDocument = this.documentService.store(taskDocument);
+
+        assertEquals(currentUnassignedTags, this.tagService.getUnassignedTags().size());
+
+        this.documentService.delete(storedDocument);
+
+        assertEquals(currentUnassignedTags + 1, this.tagService.getUnassignedTags().size());
     }
 
     private Binary storeBinary() {

@@ -27,7 +27,7 @@ public class Document extends Identifiable{
     }
 
     public Document(UUID id, LocalDateTime createdAt, String title, String description, Binary file, List<Page> pages, List<Tag> tags) {
-        this(id, createdAt, title, description, file, pages.stream().map(Page::getContent).collect(Collectors.joining("\n")), pages, Collections.emptyList());
+        this(id, createdAt, title, description, file, pages.stream().map(Page::getContent).collect(Collectors.joining("\n")), pages, tags);
     }
 
     public String getTitle() {
