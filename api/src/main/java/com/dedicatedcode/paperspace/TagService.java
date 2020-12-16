@@ -26,12 +26,12 @@ public class TagService {
     }
 
     public List<Tag> getAll() {
-        return this.jdbcTemplate.query("SELECT * FROM tags", TagService::mapRow);
+        return getAll(null);
     }
 
     public List<Tag> getAll(String searchTerm) {
         if (searchTerm == null) {
-            return getAll();
+            return this.jdbcTemplate.query("SELECT * FROM tags", TagService::mapRow);
         } else {
             searchTerm = "%" + searchTerm + "%";
             return this.jdbcTemplate.query("SELECT * FROM tags WHERE name LIKE ?", TagService::mapRow, searchTerm);
@@ -45,10 +45,6 @@ public class TagService {
     public void delete(Tag tag) {
         this.jdbcTemplate.update("DELETE FROM documents_tags WHERE tag_id = ?", tag.getId().toString());
         this.jdbcTemplate.update("DELETE FROM tags WHERE id = ?", tag.getId().toString());
-    }
-
-    public void update(Tag tag) {
-        this.jdbcTemplate.update("UPDATE tags SET name = ? WHERE id = ?", tag.getName(), tag.getId().toString());
     }
 
     public List<Tag> getUnassignedTags() {
