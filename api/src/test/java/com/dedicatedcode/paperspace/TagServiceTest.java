@@ -63,6 +63,8 @@ class TagServiceTest {
 
     @Test
     void searchTags() {
+        long allTagsCount = this.tagService.getAll().size();
+
         Tag first = new Tag(UUID.randomUUID(), rand());
         Tag second = new Tag(UUID.randomUUID(), rand("searchable_"));
         Tag third = new Tag(UUID.randomUUID(), rand("searchable_"));
@@ -77,6 +79,6 @@ class TagServiceTest {
         assertTrue(result.stream().anyMatch(r -> third.getId().equals(r.getId())));
 
         result = this.tagService.getAll(null);
-        assertEquals(3, result.size());
+        assertEquals(allTagsCount + 3, result.size());
     }
 }
