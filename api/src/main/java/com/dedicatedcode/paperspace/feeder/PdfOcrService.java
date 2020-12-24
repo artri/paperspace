@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,8 +50,8 @@ public class PdfOcrService implements OcrService {
     }
 
     @Override
-    public boolean supports(String mimeType) {
-        return mimeType.contains("pdf");
+    public List<String> supportedFileFormats() {
+        return Collections.singletonList("application/pdf");
     }
 
     @Override

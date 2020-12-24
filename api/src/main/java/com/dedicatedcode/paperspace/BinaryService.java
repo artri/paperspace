@@ -52,14 +52,14 @@ public class BinaryService {
     }
 
     public Binary getByPath(String storagePath) {
-        return this.jdbcTemplate.query("SELECT * FROM binaries WHERE storage_path = ?", getBinaryRowMapper(), storagePath)
+        return this.jdbcTemplate.query("SELECT * FROM binaries WHERE storage_path = ? AND state = 'PROCESSED'", getBinaryRowMapper(), storagePath)
                 .stream()
                 .findFirst()
                 .orElse(null);
     }
 
     public Binary getByHash(String md5) {
-        return this.jdbcTemplate.query("SELECT * FROM binaries WHERE hash = ?", getBinaryRowMapper(), md5)
+        return this.jdbcTemplate.query("SELECT * FROM binaries WHERE hash = ? AND state = 'PROCESSED'", getBinaryRowMapper(), md5)
                 .stream()
                 .findFirst()
                 .orElse(null);
@@ -71,7 +71,7 @@ public class BinaryService {
     }
 
     public List<Binary> getAll() {
-        return this.jdbcTemplate.query("SELECT * FROM binaries ", getBinaryRowMapper());
+        return this.jdbcTemplate.query("SELECT * FROM binaries", getBinaryRowMapper());
     }
 
     private RowMapper<Binary> getBinaryRowMapper() {
@@ -87,6 +87,6 @@ public class BinaryService {
     }
 
     public List<Binary> getFailed() {
-        return this.jdbcTemplate.query("SELECT * FROM binaries WHERE state = 'FAILED'", getBinaryRowMapper());
+        return this.jdbcTemplate.query("SELECT * FROM binaries WHERE state = 'FAILED' OR state = 'DUPLICATE'", getBinaryRowMapper());
     }
 }

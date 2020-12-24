@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -65,6 +66,7 @@ public class DelegatingFileEventListener implements FileEventListener {
                 getBinary(file).ifPresentOrElse(this::handleExisting, () -> {
                     log.info("[EXISTING] event received but we dont know the binary, will handle as new");
                     handleCreation(file, inputType);
+
                 });
                 break;
             case CHANGE:
@@ -88,8 +90,17 @@ public class DelegatingFileEventListener implements FileEventListener {
 
     private void handleCreation(File file, InputType inputType) {
         log.info("new file detected. Will doing ocr, creation of screenshots and storing everything in the database");
+        if (!file.exists()) {
+            log.warn("File [{}] got deleted before we could process it", file);
+            return;
+        }
         String md5 = getHashFromFile(file);
         try {
+            if (this.binaryService.getByHash(md5) != null) {
+                log.warn("Duplicate [{}] detected!", file);
+                this.binaryService.store(new Binary(UUID.randomUUID(), LocalDateTime.now(), file.getAbsolutePath(), md5, loadMimeType(file), file.length(), OCRState.DUPLICATE));
+                return;
+            }
             List<Page> pages = doOcr(file);
             LocalDateTime now = LocalDateTime.now();
             Binary documentBinary = new Binary(UUID.randomUUID(), now, file.getAbsolutePath(), md5, loadMimeType(file), file.length(), OCRState.PROCESSED);
@@ -119,11 +130,11 @@ public class DelegatingFileEventListener implements FileEventListener {
         String mimeType = FileTypes.loadMimeType(file);
         log.debug("Searching for a an ocr handler for [{}] with mimeType [{}]", file, mimeType);
         for (OcrService ocrService : ocrServices) {
-            if (ocrService.supports(mimeType)) {
+            if (ocrService.supportedFileFormats().contains(mimeType)) {
                 return ocrService.doOcr(file);
             }
         }
-        throw new OcrException("Unhandled file format [" + mimeType + "] detected for [" + file + "]");
+        throw new OcrException("Unhandled file format [" + mimeType + "] detected for [" + file + "], supported formats are [" + ocrServices.stream().flatMap(service -> service.supportedFileFormats().stream()).collect(Collectors.joining(",")) + "]");
     }
 
     private String getHashFromFile(File file) {

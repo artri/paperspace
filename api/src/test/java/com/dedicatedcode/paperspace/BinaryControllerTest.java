@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,7 +47,8 @@ class BinaryControllerTest {
 
     @Test
     void uploadBinary() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "Test File.pdf", "application/pdf", getClass().getResourceAsStream("/test_files/A Sample PDF.pdf"));
+        TestHelper.TestFile testFile = TestHelper.randPdf();
+        MockMultipartFile file = new MockMultipartFile("file", "Test File.pdf", "application/pdf", new FileInputStream(testFile.getFile()));
 
         AtomicReference<Binary> binary = new AtomicReference<>();
         mockMvc.perform(multipart("/api/binary")
@@ -60,7 +62,6 @@ class BinaryControllerTest {
                 .andExpect(jsonPath("$.storageLocation", startsWith("/tmp/paperspace-test/storage/binary")))
                 .andExpect(jsonPath("$.filename", startsWith("Test File")))
                 .andExpect(jsonPath("$.mimeType", is("application/pdf")))
-                .andExpect(jsonPath("$.length", is(9689)))
                 .andDo(result -> binary.set(objectMapper.readValue(result.getResponse().getContentAsString(), Binary.class)));
 
         assertTrue(new File(binary.get().getStorageLocation()).exists());
@@ -75,7 +76,8 @@ class BinaryControllerTest {
 
     @Test
     void shouldVerifyMimeTypeParameters() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("data", "Test File.pdf", "application/pdf", getClass().getResourceAsStream("/test_files/A Sample PDF.pdf"));
+        TestHelper.TestFile testFile = TestHelper.randPdf();
+        MockMultipartFile file = new MockMultipartFile("data", "Test File.pdf", "application/pdf", new FileInputStream(testFile.getFile()));
         mockMvc.perform(multipart("/api/binary")
                 .file(file))
                 .andExpect(status().is(400));

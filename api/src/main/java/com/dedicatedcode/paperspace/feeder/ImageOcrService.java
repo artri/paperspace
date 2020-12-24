@@ -44,8 +44,8 @@ public class ImageOcrService implements OcrService {
     }
 
     @Override
-    public boolean supports(String mimeType) {
-        return SUPPORTED_FILE_FORMATS.contains(mimeType);
+    public List<String> supportedFileFormats() {
+        return SUPPORTED_FILE_FORMATS;
     }
 
     @Override

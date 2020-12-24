@@ -59,7 +59,7 @@ public class DocumentResponse {
 
     private String createFromContent(Document document) {
         if (document == null || StringUtils.isEmpty(document.getContent())){
-            return null;
+            return "";
         }
         else {
             String content = document.getContent();

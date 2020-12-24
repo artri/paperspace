@@ -52,7 +52,7 @@ public class MergingFileEventHandler {
 
     private void initThreads() {
         executor.scheduleWithFixedDelay(() -> {
-            LocalDateTime now = LocalDateTime.now().minus(recheckInterval, ChronoUnit.MILLIS);
+            LocalDateTime minAgeOfEvent = LocalDateTime.now().minus(recheckInterval, ChronoUnit.MILLIS);
             List<FileEvent> toHandle = new ArrayList<>();
             HashMap<FileEvent, Long> map;
             synchronized (recheckList) {
@@ -60,7 +60,7 @@ public class MergingFileEventHandler {
                 recheckList.clear();
             }
             map.forEach((event, value) -> {
-                if (event.getOccurredAt().isBefore(now)) {
+                if (event.getOccurredAt().isBefore(minAgeOfEvent)) {
                     log.debug("checking file size of [{}]", event.getFile());
                     if (event.getFile().length() == value) {
                         register(event.getEventType(), event.getFile(), event.getInputType());
@@ -76,14 +76,14 @@ public class MergingFileEventHandler {
         }, 0, recheckInterval, TimeUnit.MILLISECONDS);
 
         executor.scheduleWithFixedDelay(() -> {
-            LocalDateTime now = LocalDateTime.now().minus(notifyInterval, ChronoUnit.MILLIS);
+            LocalDateTime minAgeOfEvent = LocalDateTime.now().minus(notifyInterval, ChronoUnit.MILLIS);
             synchronized (this.queuedFileEvents) {
                 long countBefore = this.queuedFileEvents.size();
                 Iterator<FileEvent> iterator = this.queuedFileEvents.listIterator();
                 int notifiedCount = 0;
                 while (iterator.hasNext()) {
                     FileEvent fileEvent = iterator.next();
-                    if (fileEvent.getOccurredAt().isBefore(now)) {
+                    if (fileEvent.getOccurredAt().isBefore(minAgeOfEvent)) {
                         notifiedCount++;
                         iterator.remove();
                         executingCount.incrementAndGet();
