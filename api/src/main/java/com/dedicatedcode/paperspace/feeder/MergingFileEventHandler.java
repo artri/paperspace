@@ -139,9 +139,10 @@ public class MergingFileEventHandler {
             log.info("registered event for file [{}] with hash [{}]", file, hash);
             String finalHash = hash;
             synchronized (queuedFileEvents) {
-                List<FileEvent> updatedList = this.queuedFileEvents.stream().filter(event -> !event.getHash().equals(finalHash) && !event.getFile().equals(file)).collect(Collectors.toList());
-                FileEvent storedEventByHash = this.queuedFileEvents.stream().filter(event -> event.getHash().equals(finalHash)).findFirst().orElse(null);
-                FileEvent storedEventByFileName = this.queuedFileEvents.stream().filter(event -> event.getFile().equals(file)).findFirst().orElse(null);
+                FileEvent storedEventByHash = this.queuedFileEvents.stream().filter(event -> event.getHash().equals(finalHash)).filter(event -> event.getFile().getName().equals(file.getName())).findFirst().orElse(null);
+                FileEvent storedEventByFileName = this.queuedFileEvents.stream().filter(event -> event.getFile().equals(file)).filter(event -> event.getFile().getName().equals(file.getName())).findFirst().orElse(null);
+
+                List<FileEvent> updatedList = this.queuedFileEvents.stream().filter(event -> !event.equals(storedEventByHash) && !event.equals(storedEventByFileName)).collect(Collectors.toList());
 
                 log.debug("Found existing event by hash [{}] or fileName [{}] for file[{}]", storedEventByHash, storedEventByFileName, file);
                 FileEvent storedEvent = storedEventByHash != null ? storedEventByHash : storedEventByFileName;

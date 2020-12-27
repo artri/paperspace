@@ -1,6 +1,11 @@
-function ErrorController(config, callbacks) {
-    const configuration = config;
+function ErrorController(config) {
     let lastErrors = 0;
+
+    function createErrorMessage(file) {
+        return file.errorCode === 'DUPLICATE' ?
+            `<strong>${file.path}</strong> is a duplicate` :
+            `processing of <strong>${file.path}</strong> failed`;
+    }
 
     function loadStatus() {
         const errorContainer = $(config.errorLabel);
@@ -9,12 +14,13 @@ function ErrorController(config, callbacks) {
             if (data.length === 0) {
                 errorContainer.hide();
             } else if (data.length !== lastErrors) {
-                $(errorContainer).innerHTML = ``;
+                $(errorContainer).html(``);
                 for (const file of data) {
+                    let errorText = createErrorMessage(file);
                     $(errorContainer).append(`
                         <div class="notification is-danger is-active columns mt-1">
                             <p class="column is-8">
-                                processing of <strong>${file.path}</strong> failed
+                                ${errorText}
                             </p>
                             <p class="column is-4 has-text-right">
                                 <button data-href="${file.links.ignore}" class="button is-small is-warning" title="ignore file">
@@ -28,8 +34,10 @@ function ErrorController(config, callbacks) {
                 }
                 errorContainer.show();
                 $('button', errorContainer).on('click', function () {
-                   const href = $(this).data('href');
-                   $.post(href).done(() => {loadStatus()})
+                    const href = $(this).data('href');
+                    $.post(href).done(() => {
+                        loadStatus()
+                    })
                 });
             }
 

@@ -67,8 +67,8 @@ public class BinaryController {
     @ResponseBody
     public ResponseEntity<Resource> download(@PathVariable UUID id) {
         Binary binary = this.binaryService.get(id);
-        if (binary==null) {
-            throw new UnknownBinaryException("could not find binary with id ["+id+"]");
+        if (binary == null) {
+            throw new UnknownBinaryException("could not find binary with id [" + id + "]");
         }
 
         FileSystemResource resource = new FileSystemResource(binary.getStorageLocation());
@@ -85,8 +85,8 @@ public class BinaryController {
     @ResponseBody
     public ResponseEntity<Resource> view(@PathVariable UUID id) {
         Binary binary = this.binaryService.get(id);
-        if (binary==null) {
-            throw new UnknownBinaryException("could not find binary with id ["+id+"]");
+        if (binary == null) {
+            throw new UnknownBinaryException("could not find binary with id [" + id + "]");
         }
 
         FileSystemResource resource = new FileSystemResource(binary.getStorageLocation());
@@ -106,7 +106,8 @@ public class BinaryController {
             throw new UnknownBinaryException("could not find binary with id [" + id + "]");
         }
 
-        File loadedFile;;
+        File loadedFile;
+        ;
 
         if (width != null) {
             File originalFile = new File(binary.getStorageLocation());
@@ -142,8 +143,8 @@ public class BinaryController {
     @ResponseBody
     public ResponseEntity<BinaryResponse> delete(@PathVariable UUID id) {
         Binary binary = this.binaryService.get(id);
-        if (binary==null) {
-            throw new UnknownBinaryException("could not find binary with id ["+id+"]");
+        if (binary == null) {
+            throw new UnknownBinaryException("could not find binary with id [" + id + "]");
         }
         this.binaryService.delete(binary);
         this.storageService.delete(binary.getStorageLocation());
@@ -154,8 +155,8 @@ public class BinaryController {
     @ResponseBody
     public ResponseEntity<BinaryResponse> ignore(@PathVariable UUID id) {
         Binary binary = this.binaryService.get(id);
-        if (binary==null) {
-            throw new UnknownBinaryException("could not find binary with id ["+id+"]");
+        if (binary == null) {
+            throw new UnknownBinaryException("could not find binary with id [" + id + "]");
         }
         Binary newBinary = binary.withState(OCRState.IGNORED);
         this.binaryService.update(newBinary);

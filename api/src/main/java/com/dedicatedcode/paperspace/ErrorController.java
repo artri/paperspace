@@ -26,16 +26,22 @@ public class ErrorController {
     private static class BinaryErrorResponse {
 
         private final String path;
+        private final String errorCode;
         private final Map<String, String> links = new HashMap<>();
 
         private BinaryErrorResponse(Binary binary) {
             this.path = binary.getStorageLocation();
+            this.errorCode = binary.getState().name();
             this.links.put("delete", "/api/binary/" + binary.getId() + "/delete");
             this.links.put("ignore", "/api/binary/" + binary.getId() + "/ignore");
         }
 
         public String getPath() {
             return path;
+        }
+
+        public String getErrorCode() {
+            return errorCode;
         }
 
         public Map<String, String> getLinks() {

@@ -155,7 +155,7 @@ public class LocalStorageService implements StorageService {
     public void delete(String path) {
         boolean delete = new File(path).delete();
         if (!delete) {
-            throw new StorageException("Could not delete file [" + path + "]");
+            new File(path).deleteOnExit();
         }
     }
 }

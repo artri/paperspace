@@ -65,6 +65,7 @@ public class DelegatingFileEventListener implements FileEventListener {
             case EXISTING:
                 getBinary(file).ifPresentOrElse(this::handleExisting, () -> {
                     log.info("[EXISTING] event received but we dont know the binary, will handle as new");
+
                     handleCreation(file, inputType);
 
                 });
@@ -98,9 +99,12 @@ public class DelegatingFileEventListener implements FileEventListener {
         try {
             if (this.binaryService.getByHash(md5) != null) {
                 log.warn("Duplicate [{}] detected!", file);
-                this.binaryService.store(new Binary(UUID.randomUUID(), LocalDateTime.now(), file.getAbsolutePath(), md5, loadMimeType(file), file.length(), OCRState.DUPLICATE));
+                if (this.binaryService.getAll().stream().noneMatch(binary -> binary.getStorageLocation().equals(file.getAbsolutePath()))) {
+                    this.binaryService.store(new Binary(UUID.randomUUID(), LocalDateTime.now(), file.getAbsolutePath(), md5, loadMimeType(file), file.length(), OCRState.DUPLICATE));
+                }
                 return;
             }
+
             List<Page> pages = doOcr(file);
             LocalDateTime now = LocalDateTime.now();
             Binary documentBinary = new Binary(UUID.randomUUID(), now, file.getAbsolutePath(), md5, loadMimeType(file), file.length(), OCRState.PROCESSED);
@@ -148,17 +152,24 @@ public class DelegatingFileEventListener implements FileEventListener {
     }
 
     private Optional<Binary> getBinary(File inputFile) {
-        Binary byPath = this.binaryService.getByPath(inputFile.getAbsolutePath());
-        if (byPath == null && inputFile.exists()) {
+        Binary binary = this.binaryService.getByPath(inputFile.getAbsolutePath());
+        if (binary == null && inputFile.exists()) {
             try (InputStream is = new FileInputStream(inputFile)) {
-                return Optional.ofNullable(this.binaryService.getByHash(DigestUtils.md5DigestAsHex(is)));
+                binary = this.binaryService.getByHash(DigestUtils.md5DigestAsHex(is));
             } catch (IOException e) {
                 log.error("could not calculate md5 sum of [{}]", inputFile);
                 return Optional.empty();
             }
-        } else {
-            return Optional.ofNullable(byPath);
         }
+
+        if (binary != null) {
+            File knownFile = new File(binary.getStorageLocation());
+            if (!knownFile.getName().equals(inputFile.getName())) {
+                binary = null;
+            }
+        }
+
+        return Optional.ofNullable(binary);
     }
 
     private void handleChange(Binary binary, File file) {
