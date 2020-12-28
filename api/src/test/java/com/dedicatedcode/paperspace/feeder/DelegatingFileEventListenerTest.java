@@ -101,7 +101,7 @@ class DelegatingFileEventListenerTest {
         TestFile testFile = randPdf();
         File targetFile = testFile.getFile();
 
-        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/some/old/path", "12345", "application/pdf", 1, OCRState.OPEN);
+        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/some/old/" + testFile.getFile().getName(), "12345", "application/pdf", 1, OCRState.OPEN);
 
         when(binaryService.getByPath(targetFile.getAbsolutePath())).thenReturn(null);
         when(binaryService.getByHash(testFile.getHash())).thenReturn(storedBinary);
@@ -117,7 +117,7 @@ class DelegatingFileEventListenerTest {
         TestFile testFile = randPdf();
         File targetFile = testFile.getFile();
 
-        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/some/old/path", "12345", "application/pdf", 1, OCRState.OPEN);
+        Binary storedBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), "/some/old/" + testFile.getFile().getName(), "12345", "application/pdf", 1, OCRState.OPEN);
         Binary storedPageBinary = new Binary(UUID.randomUUID(), LocalDateTime.now(), targetFile.getAbsolutePath(), "12345", "application/pdf", 1, OCRState.OPEN);
         Document document = new Document(UUID.randomUUID(), LocalDateTime.now(), "Test Document", null, storedBinary,
                 Collections.singletonList(new Page(UUID.randomUUID(), 1, "Test Content", storedPageBinary)), Collections.emptyList());
