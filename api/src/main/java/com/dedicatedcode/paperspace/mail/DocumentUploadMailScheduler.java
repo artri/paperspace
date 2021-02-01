@@ -38,26 +38,28 @@ public class DocumentUploadMailScheduler implements DocumentListener {
 
     @Override
     public void created(Document document) {
-        String messageIdentifier = "DOCUMENT_CREATED_" + document.getId();
-        List<MessageAttachment> attachments = new ArrayList<>();
-        attachments.add(new MessageAttachment(MessageAttachment.AttachmentType.BINARY, document.getFile().getId()));
+        if (!(document instanceof TaskDocument)) {
+            String messageIdentifier = "DOCUMENT_CREATED_" + document.getId();
+            List<MessageAttachment> attachments = new ArrayList<>();
+            attachments.add(new MessageAttachment(MessageAttachment.AttachmentType.BINARY, document.getFile().getId()));
 
-        Context context = new Context(Locale.GERMAN);
-        context.setVariable("document", new DocumentResponse(document));
-        context.setVariable("appHost",this.appHost);
+            Context context = new Context(Locale.GERMAN);
+            context.setVariable("document", new DocumentResponse(document));
+            context.setVariable("appHost", this.appHost);
 
-        String body = textTemplateEngine.process("document", context);
-        String subject = "New document uploaded";
+            String body = textTemplateEngine.process("document", context);
+            String subject = "New document uploaded";
 
-        this.messageService.storeMessage(
-                new Message(UUID.randomUUID(),
-                        MessageType.EMAIL,
-                        MessageState.SCHEDULED,
-                        subject,
-                        body,
-                        LocalDateTime.now(),
-                        recipient,
-                        attachments), messageIdentifier);
+            this.messageService.storeMessage(
+                    new Message(UUID.randomUUID(),
+                            MessageType.EMAIL,
+                            MessageState.SCHEDULED,
+                            subject,
+                            body,
+                            LocalDateTime.now(),
+                            recipient,
+                            attachments), messageIdentifier);
+        }
     }
 
     @Override
