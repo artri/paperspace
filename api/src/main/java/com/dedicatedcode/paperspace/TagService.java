@@ -31,10 +31,10 @@ public class TagService {
 
     public List<Tag> getAll(String searchTerm) {
         if (searchTerm == null) {
-            return this.jdbcTemplate.query("SELECT * FROM tags", TagService::mapRow);
+            return this.jdbcTemplate.query("SELECT * FROM tags ORDER BY name", TagService::mapRow);
         } else {
             searchTerm = "%" + searchTerm + "%";
-            return this.jdbcTemplate.query("SELECT * FROM tags WHERE name LIKE ?", TagService::mapRow, searchTerm);
+            return this.jdbcTemplate.query("SELECT * FROM tags WHERE name LIKE ? ORDER BY name", TagService::mapRow, searchTerm);
         }
     }
 

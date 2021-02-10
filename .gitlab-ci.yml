@@ -12,7 +12,7 @@ build-api:
     - apt-get update && apt-get install -y nodejs npm && npm install -g gulp
     - chmod u+x api/gradlew
   script:
-    - cd api && ./gradlew build --info
+    - cd api && ./gradlew build
     - cat build/reports/jacoco/test/html/index.html
   artifacts:
     expire_in: 1h
