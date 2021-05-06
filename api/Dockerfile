@@ -1,6 +1,7 @@
 FROM ubuntu:20.04
 ENV LANG C.UTF-8
-RUN apt-get update && apt-get install -yyy openjdk-14-jre tesseract-ocr curl
+RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -yyy openjdk-14-jre tesseract-ocr curl python3-pip
+RUN pip3 install stapler
 ENV spring_profiles_active=docker
 
 EXPOSE 8080

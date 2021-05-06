@@ -2,6 +2,7 @@ package com.dedicatedcode.paperspace;
 
 import com.dedicatedcode.paperspace.model.Document;
 import com.dedicatedcode.paperspace.model.Page;
+import com.dedicatedcode.paperspace.search.SolrService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(DocumentEditController.class)
 class DocumentEditControllerTest {
+
+    @MockBean
+    private SolrService solrService;
 
     @MockBean
     private DocumentService documentService;

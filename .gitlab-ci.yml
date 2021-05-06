@@ -9,7 +9,7 @@ stages:
 build-api:
   stage: build
   before_script:
-    - apt-get update && apt-get install -y nodejs npm && npm install -g gulp
+    - apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y nodejs npm python3-pip && npm install -g gulp && pip3 install stapler
     - chmod u+x api/gradlew
   script:
     - cd api && ./gradlew build
