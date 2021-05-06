@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,7 +31,7 @@ public class DocumentController {
     private final TagService tagService;
 
     @Autowired
-    public DocumentController(DocumentService documentService, BinaryService binaryService, SolrService solrService, @Value("${task.defaultDuePeriod}") int defaultTaskDuePeriod, StorageService storageService, List<DocumentListener> documentListeners, TagService tagService) {
+    public DocumentController(DocumentService documentService, BinaryService binaryService, SolrService solrService, @Value("${task.defaultDuePeriod}") int defaultTaskDuePeriod, StorageService storageService, List<DocumentListener> documentListeners, TagService tagService, List<ModificationService> modificationServices) {
         this.documentService = documentService;
         this.binaryService = binaryService;
         this.solrService = solrService;
@@ -82,7 +81,9 @@ public class DocumentController {
             documentListener.changed(oldVersion, newVersion);
         }
 
-        return new DocumentResponse(oldVersion);
+
+
+        return new DocumentResponse(newVersion);
     }
 
     @PostMapping("/api/task/{id}/done")

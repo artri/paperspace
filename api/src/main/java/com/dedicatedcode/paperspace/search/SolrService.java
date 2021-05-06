@@ -86,7 +86,7 @@ public class SolrService {
                                 highlightLines = Arrays.stream(document.getContent().split("\n"))
                                         .filter(line -> line.toLowerCase().contains(queryString.toLowerCase()))
                                         .limit(5)
-                                        .map(line -> line.replaceAll(Pattern.quote(queryString), "<em>"+queryString+"</em>"))
+                                        .map(line -> line.replaceAll(Pattern.quote(queryString), "<em>" + queryString + "</em>"))
                                         .collect(Collectors.toList());
                             } else {
                                 highlightLines = Arrays.asList(document.getContent().split("\n"));
@@ -171,7 +171,7 @@ public class SolrService {
             solrInput.addField("content", document.getContent());
             solrInput.addField("tags", document.getTags().stream().map(Identifiable::getId).map(UUID::toString).collect(Collectors.toList()));
 
-            this.solrClient.add(solrInput);
+            this.solrClient.add(solrInput, 0);
             log.debug("indexed document [{}] into solr", document.getId());
         } catch (IOException | SolrServerException e) {
             throw new RuntimeException("Unable to store document in search", e);
@@ -191,7 +191,7 @@ public class SolrService {
 
     public void delete(Document document) {
         try {
-            UpdateResponse response = this.solrClient.deleteByQuery("id:" + document.getId());
+            UpdateResponse response = this.solrClient.deleteByQuery("id:" + document.getId(), 0);
             if (response.getStatus() == 0) {
                 log.info("deletion of document [{}] was successful", document.getId());
             } else {

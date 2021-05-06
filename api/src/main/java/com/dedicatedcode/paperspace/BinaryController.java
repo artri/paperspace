@@ -172,10 +172,4 @@ public class BinaryController {
         }
     }
 
-    @ExceptionHandler(UnknownBinaryException.class)
-    @ResponseBody
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(UnknownBinaryException ex) {
-        return new ErrorResponse(ex.getMessage(), 404);
-    }
 }

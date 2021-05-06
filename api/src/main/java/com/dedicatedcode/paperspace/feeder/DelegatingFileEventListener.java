@@ -183,6 +183,7 @@ public class DelegatingFileEventListener implements FileEventListener {
         try {
             List<Page> pages = doOcr(file);
             Document updatedDocument = associatedDocument.withPages(pages);
+            pages.forEach(page -> this.binaryService.store(page.getPreview()));
             this.documentService.update(updatedDocument);
             this.solrService.index(updatedDocument);
         } catch (OcrException e) {

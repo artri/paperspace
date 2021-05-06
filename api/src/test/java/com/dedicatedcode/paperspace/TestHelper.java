@@ -1,5 +1,7 @@
 package com.dedicatedcode.paperspace;
 
+import com.dedicatedcode.paperspace.model.Binary;
+import com.dedicatedcode.paperspace.model.OCRState;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public final class TestHelper {
@@ -28,19 +31,24 @@ public final class TestHelper {
     }
 
     public static TestFile randPdf() {
+        return randPdf(1);
+    }
+
+    public static TestFile randPdf(int pages) {
+        PDFont font = PDType1Font.HELVETICA_BOLD;
+
         try (PDDocument doc = new PDDocument()) {
             File target = Files.createTempFile("test_", ".pdf").toFile();
-            PDPage page = new PDPage();
-            doc.addPage(page);
-
-            PDFont font = PDType1Font.HELVETICA_BOLD;
-
-            try (PDPageContentStream contents = new PDPageContentStream(doc, page)) {
-                contents.beginText();
-                contents.setFont(font, 12);
-                contents.newLineAtOffset(100, 700);
-                contents.showText("TEST: " + UUID.randomUUID());
-                contents.endText();
+            for (int i = 0; i < pages; i++) {
+                PDPage page = new PDPage();
+                doc.addPage(page);
+                try (PDPageContentStream contents = new PDPageContentStream(doc, page)) {
+                    contents.beginText();
+                    contents.setFont(font, 12);
+                    contents.newLineAtOffset(100, 700);
+                    contents.showText("PAGE " + i + " -TEST: " + UUID.randomUUID());
+                    contents.endText();
+                }
             }
 
             doc.save(target);
@@ -49,6 +57,15 @@ public final class TestHelper {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Binary randBinary(int pages) {
+        TestFile testFile = randPdf(pages);
+        return new Binary(UUID.randomUUID(), LocalDateTime.now(), testFile.file.getAbsolutePath(), testFile.getHash(), "application/pdf", testFile.file.length(), OCRState.PROCESSED);
+    }
+
+    public static Binary randBinary() {
+        return randBinary(1);
     }
 
     public static class TestFile {

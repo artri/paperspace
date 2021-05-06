@@ -215,6 +215,7 @@ function SearchController(config) {
 
     function search(url) {
         showLoader();
+        console.log('search called');
         $.get(url).done((data) => {
             $(configuration.results).html('');
             if (data.items.length > 0) {

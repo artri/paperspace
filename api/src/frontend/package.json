@@ -13,7 +13,6 @@
     "@fortawesome/fontawesome-free": "^5.14.0",
     "browser-sync": "^2.26.7",
     "bulma-calendar": "^6.0.9",
-    "bulma-carousel": "^4.0.4",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",

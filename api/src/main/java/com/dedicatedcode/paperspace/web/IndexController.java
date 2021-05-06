@@ -1,6 +1,7 @@
 package com.dedicatedcode.paperspace.web;
 
 import com.dedicatedcode.paperspace.DocumentService;
+import com.dedicatedcode.paperspace.ModificationService;
 import com.dedicatedcode.paperspace.TagService;
 import com.dedicatedcode.paperspace.feeder.MergingFileEventHandler;
 import com.dedicatedcode.paperspace.model.*;
@@ -28,9 +29,10 @@ public class IndexController {
     private final MergingFileEventHandler fileEventHandler;
     private final TagService tagService;
     private final String appHost;
+    private final List<ModificationService> modificationServices;
 
     @Autowired
-    public IndexController(DocumentService documentService, List<DocumentListener> documentListeners, SolrService solrService, SolrVersionService solrVersionService, MergingFileEventHandler fileEventHandler, TagService tagService, @Value("${app.host}") String appHost) {
+    public IndexController(DocumentService documentService, List<DocumentListener> documentListeners, SolrService solrService, SolrVersionService solrVersionService, MergingFileEventHandler fileEventHandler, TagService tagService, @Value("${app.host}") String appHost, List<ModificationService> modificationServices) {
         this.documentService = documentService;
         this.documentListeners = documentListeners;
         this.solrService = solrService;
@@ -38,6 +40,7 @@ public class IndexController {
         this.fileEventHandler = fileEventHandler;
         this.tagService = tagService;
         this.appHost = appHost;
+        this.modificationServices = modificationServices;
     }
 
     @RequestMapping("/")
@@ -54,6 +57,17 @@ public class IndexController {
 
     @RequestMapping({"/task/{id}", "/document/{id}"})
     public String loadDocumentPage(@PathVariable UUID id, ModelMap model) {
+        updateDocumentModel(id, model);
+        return "task";
+    }
+
+    @RequestMapping({"/task/edit/{id}", "/document/edit/{id}"})
+    public String loadDocumentEditPage(@PathVariable UUID id, ModelMap model) {
+        updateDocumentModel(id, model);
+        return "edit";
+    }
+
+    private void updateDocumentModel(@PathVariable UUID id, ModelMap model) {
         Document document = this.documentService.getDocument(id);
         if (document == null) {
             throw new UnknownPageException("unable to find document with id [" + id + "]");
@@ -63,8 +77,8 @@ public class IndexController {
         } else {
             model.addAttribute("document", new DocumentResponse(document));
         }
+        model.addAttribute("editable", this.modificationServices.stream().anyMatch(ms -> ms.isEnabled() && ms.supportedFileFormats().contains(document.getFile().getMimeType())));
         model.addAttribute("appHost", appHost);
-        return "task";
     }
 
     @GetMapping("/task/{id}/done")

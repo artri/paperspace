@@ -24,6 +24,7 @@ public class TaskDocumentResponse extends DocumentResponse {
         HashMap<String, String> map = new HashMap<>();
         map.put("self", "/task/" + document.getId());
         map.put("edit", "/api/task/" + document.getId());
+        map.put("editPages", "/task/edit/" + document.getId());
         map.put("pages", "/api/task/" + document.getId() + "/pages");
         map.put("download", "/api/task/" + document.getFile().getId());
         map.put("done", "/api/task/" + document.getId() + "/done");
