@@ -60,9 +60,21 @@ function PreviewController(config) {
             isFullscreen = !!document.fullscreenElement;
         });
 
+        document.addEventListener('keydown', function (event) {
+            const targetTagName = event.target.tagName;
+            if (targetTagName !== 'TEXTAREA' && targetTagName !== 'INPUT' && !event.altKey && !event.ctrlKey) {
+                switch (event.key) {
+                    case 'ArrowLeft':
+                        plusSlides(-1);
+                        break;
+                    case 'ArrowRight':
+                        plusSlides(1);
+                        break;
+                }
+            }
+        });
 
     }
-
 
     function plusSlides(n) {
         showSlides(slideIndex += n);
