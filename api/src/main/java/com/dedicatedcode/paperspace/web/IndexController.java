@@ -2,11 +2,11 @@ package com.dedicatedcode.paperspace.web;
 
 import com.dedicatedcode.paperspace.DocumentService;
 import com.dedicatedcode.paperspace.ModificationService;
-import com.dedicatedcode.paperspace.TagService;
-import com.dedicatedcode.paperspace.feeder.MergingFileEventHandler;
-import com.dedicatedcode.paperspace.model.*;
+import com.dedicatedcode.paperspace.model.Document;
+import com.dedicatedcode.paperspace.model.DocumentListener;
+import com.dedicatedcode.paperspace.model.State;
+import com.dedicatedcode.paperspace.model.TaskDocument;
 import com.dedicatedcode.paperspace.search.SolrService;
-import com.dedicatedcode.paperspace.search.SolrVersionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -15,45 +15,31 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Controller
 public class IndexController {
     private final DocumentService documentService;
     private final List<DocumentListener> documentListeners;
     private final SolrService solrService;
-    private final SolrVersionService solrVersionService;
-    private final MergingFileEventHandler fileEventHandler;
-    private final TagService tagService;
     private final String appHost;
     private final List<ModificationService> modificationServices;
 
     @Autowired
-    public IndexController(DocumentService documentService, List<DocumentListener> documentListeners, SolrService solrService, SolrVersionService solrVersionService, MergingFileEventHandler fileEventHandler, TagService tagService, @Value("${app.host}") String appHost, List<ModificationService> modificationServices) {
+    public IndexController(DocumentService documentService, List<DocumentListener> documentListeners, SolrService solrService, @Value("${app.host}") String appHost, List<ModificationService> modificationServices) {
         this.documentService = documentService;
         this.documentListeners = documentListeners;
         this.solrService = solrService;
-        this.solrVersionService = solrVersionService;
-        this.fileEventHandler = fileEventHandler;
-        this.tagService = tagService;
         this.appHost = appHost;
         this.modificationServices = modificationServices;
     }
 
     @RequestMapping("/")
-    public String loadIndexPage(ModelMap modelMap) {
-        modelMap.addAttribute("tags", this.tagService.getAll().stream().sorted(Comparator.comparing(Tag::getName)).collect(Collectors.toList()));
+    public String loadIndexPage() {
         return "index";
     }
 
-    @RequestMapping("/api/status.json")
-    @ResponseBody
-    public Status loadStatus() {
-        return new Status(this.solrVersionService.needsReindexing(), fileEventHandler.getPendingChanges());
-    }
 
     @RequestMapping({"/task/{id}", "/document/{id}"})
     public String loadDocumentPage(@PathVariable UUID id, ModelMap model) {
@@ -105,21 +91,4 @@ public class IndexController {
         return ex.getMessage();
     }
 
-    private static class Status {
-        private final String data;
-        private final int pendingChanges;
-
-        private Status(SolrVersionService.Status data, int pendingChanges) {
-            this.data = data.name();
-            this.pendingChanges = pendingChanges;
-        }
-
-        public String getData() {
-            return data;
-        }
-
-        public int getPendingChanges() {
-            return pendingChanges;
-        }
-    }
 }

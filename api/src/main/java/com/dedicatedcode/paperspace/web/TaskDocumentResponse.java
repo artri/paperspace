@@ -26,8 +26,8 @@ public class TaskDocumentResponse extends DocumentResponse {
         map.put("edit", "/api/task/" + document.getId());
         map.put("editPages", "/task/edit/" + document.getId());
         map.put("pages", "/api/task/" + document.getId() + "/pages");
-        map.put("download", "/api/task/" + document.getFile().getId());
         map.put("done", "/api/task/" + document.getId() + "/done");
+        map.put("download", "/api/download/" + document.getFile().getId());
         map.put("view", "/api/view/" + document.getFile().getId());
         map.put("preview", document.getPages().stream().findFirst().map(page -> "/api/image/" + page.getPreview().getId() + "?width=560").orElse(null));
         return map;

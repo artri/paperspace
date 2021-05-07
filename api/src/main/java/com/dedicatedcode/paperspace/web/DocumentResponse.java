@@ -32,7 +32,7 @@ public class DocumentResponse {
         map.put("self", "/document/" + document.getId());
         map.put("edit", "/api/document/" + document.getId());
         map.put("editPages", "/document/edit/" + document.getId());
-        map.put("pages", "/api/edit/" + document.getId());
+        map.put("pages", "/api/document/" + document.getId() + "/pages");
         map.put("download", "/api/download/" + document.getFile().getId());
         map.put("view", "/api/view/" + document.getFile().getId());
         map.put("preview", document.getPages().stream().findFirst().map(page -> "/api/image/" + page.getPreview().getId() + "?width=560").orElse(null));
@@ -59,10 +59,9 @@ public class DocumentResponse {
     }
 
     private String createFromContent(Document document) {
-        if (document == null || StringUtils.isEmpty(document.getContent())){
+        if (document == null || StringUtils.isEmpty(document.getContent())) {
             return "";
-        }
-        else {
+        } else {
             String content = document.getContent();
             content = content.substring(0, Math.min(content.length(), 150));
             String[] lines = content.split("\\n");

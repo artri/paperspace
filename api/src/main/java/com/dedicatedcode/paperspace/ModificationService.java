@@ -11,5 +11,5 @@ public interface ModificationService {
 
     List<String> supportedFileFormats();
 
-    Binary modify(Binary binary, List<PageEditModel> oldVersion, List<PageEditModel> updatedVersion);
+    boolean modify(Binary binary, List<PageEditModel> oldVersion, List<PageEditModel> updatedVersion);
 }

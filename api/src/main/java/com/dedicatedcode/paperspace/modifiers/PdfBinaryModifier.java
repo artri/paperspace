@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,8 +45,22 @@ public class PdfBinaryModifier implements ModificationService {
     }
 
     @Override
-    public Binary modify(Binary binary, List<PageEditModel> oldVersion, List<PageEditModel> updatedVersion) {
+    public boolean modify(Binary binary, List<PageEditModel> oldVersion, List<PageEditModel> updatedVersion) {
         try {
+            boolean structureChanged = oldVersion.size() != updatedVersion.size();
+            for (int i = 0; i < oldVersion.size(); i++) {
+                PageEditModel oldPage = oldVersion.get(i);
+                PageEditModel newPage = updatedVersion.size() > i ? updatedVersion.get(i) : null;
+                if (newPage == null) {
+                    structureChanged = true;
+                } else if (!oldPage.getPage().getId().equals(newPage.getPage().getId())) {
+                    structureChanged = true;
+                }
+            }
+
+            if (!structureChanged && updatedVersion.stream().allMatch(pageEditModel -> pageEditModel.getTransformations().isEmpty())) {
+                return false;
+            }
             String source = binary.getStorageLocation();
             List<String> pageSelection = updatedVersion.stream().filter(pageEditModel -> !pageEditModel.getTransformations().contains(PageEditTransformation.DELETE)).map(pageEditModel -> {
 
@@ -92,13 +105,13 @@ public class PdfBinaryModifier implements ModificationService {
             if (statusCode == 0) {
                 log.debug("New version of pdf [{}] created. Will overwrite current binary.", targetPath);
                 IOUtils.copy(new FileInputStream(targetPath), new FileOutputStream(source));
+                return true;
             } else {
                 log.error("Process returned status code [{}]", statusCode);
             }
         } catch (IOException | InterruptedException e) {
             log.error("Could not modify binary [{}]", binary.getId());
-            return null;
         }
-        return null;
+        return false;
     }
 }
