@@ -7,7 +7,6 @@ import com.dedicatedcode.paperspace.web.PageEditModel;
 import com.dedicatedcode.paperspace.web.PageEditTransformation;
 import com.dedicatedcode.paperspace.web.PageResponse;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.util.DigestUtils;
 
 import java.io.FileInputStream;
@@ -19,10 +18,6 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@EnabledIf(
-        expression = "#{systemProperties['os.name'].toLowerCase().contains('linux')}",
-        reason = "Enabled on Linux"
-)
 class PdfBinaryModifierTest {
 
     @Test
