@@ -7,6 +7,7 @@ import com.dedicatedcode.paperspace.model.OCRState;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,6 +46,7 @@ class MergingFileEventHandlerTest {
     }
 
     @Test
+    @Timeout(5)
     void shouldHandleDuplicatedFileIfAlreadyKnown() throws IOException, InterruptedException {
         File targetFile = new File(documentStorage, UUID.randomUUID() + ".pdf");
         TestHelper.TestFile testFile = TestHelper.randPdf();
