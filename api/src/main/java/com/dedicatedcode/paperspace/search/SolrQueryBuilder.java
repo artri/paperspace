@@ -1,7 +1,5 @@
 package com.dedicatedcode.paperspace.search;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -23,11 +21,9 @@ public class SolrQueryBuilder {
             for (int i = 1; i < chars.length - 1; i++) {
                 char before = chars[i - 1];
                 char current = chars[i];
-                char after = chars[i + 1];
 
                 CharType typeBefore = CharType.type(before);
                 CharType typeCurrent = CharType.type(current);
-                CharType typeAfter = CharType.type(after);
 
                 switch (typeCurrent) {
                     case ESCAPE:

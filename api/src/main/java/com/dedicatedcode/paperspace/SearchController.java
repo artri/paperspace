@@ -29,15 +29,16 @@ public class SearchController {
     public ResponseEntity<SearchResponse> search(
             @RequestParam(name = "q", required = false) String query,
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "tags", required = false, defaultValue = "") List<UUID> tagIds) {
+            @RequestParam(name = "tags", required = false, defaultValue = "") List<UUID> tagIds,
+            @RequestParam(name = "filters", required = false, defaultValue = "") List<SearchFilter> filters) {
 
         List<UUID> cleanedList = tagIds.stream().filter(uuid -> tagService.get(uuid) != null).collect(Collectors.toList());
         if (cleanedList.equals(tagIds)) {
             SearchResponse response;
-            if (query == null && cleanedList.isEmpty()) {
+            if (query == null && cleanedList.isEmpty() && filters.isEmpty()) {
                 response = this.solrService.recent(page, 20);
             } else {
-                response = this.solrService.query(query, tagIds, page, 20);
+                response = this.solrService.query(query, tagIds, filters, page, 20);
             }
             CacheControl cacheControl = CacheControl.noStore()
                     .noTransform()

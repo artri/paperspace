@@ -32,7 +32,7 @@ public class DocumentResponse {
         map.put("self", "/document/" + document.getId());
         map.put("edit", "/api/document/" + document.getId());
         map.put("editPages", "/document/edit/" + document.getId());
-        map.put("pages", "/api/document/" + document.getId() + "/pages");
+        map.put("pages", "/api/edit/" + document.getId());
         map.put("download", "/api/download/" + document.getFile().getId());
         map.put("view", "/api/view/" + document.getFile().getId());
         map.put("preview", document.getPages().stream().findFirst().map(page -> "/api/image/" + page.getPreview().getId() + "?width=560").orElse(null));

@@ -47,11 +47,18 @@
                 </label>
             </div>
         </div>
-        <div class="main" id="tags">
-            <button class="item button is-full-width is-text has-text-left is-block is-white">
+        <div class="main" id="actions">
+            <button data-action="clear" class="item button is-full-width is-text has-text-left is-block is-white">
                 <span class="icon"><i class="fas fa-inbox"></i></span>
                 <span class="name">All</span>
             </button>
+            <button data-action="open-tasks" class="item button is-full-width is-text has-text-left is-block is-white">
+                <span class="icon"><i class="far fa-clock"></i></span>
+                <span class="name">All open tasks</span>
+                <span class="icon is-pulled-right tag-remove"><i class="fas fa-minus-circle"></i></span>
+            </button>
+        </div>
+        <div class="main" id="tags">
             <div id="tags-container"></div>
         </div>
     </aside>

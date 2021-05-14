@@ -32,7 +32,7 @@ class DocumentResponseTest {
         assertEquals("/document/" + taskId, response.getLinks().get("self"));
         assertEquals("/api/document/" + taskId, response.getLinks().get("edit"));
         assertEquals("/document/edit/" + taskId, response.getLinks().get("editPages"));
-        assertEquals("/api/document/" + taskId + "/pages", response.getLinks().get("pages"));
+        assertEquals("/api/edit/" + taskId, response.getLinks().get("pages"));
         assertEquals("/api/download/" + binary.getId(), response.getLinks().get("download"));
         assertEquals("/api/view/" + binary.getId(), response.getLinks().get("view"));
         assertEquals("/api/image/" + pages.get(0).getPreview().getId() + "?width=560", response.getLinks().get("preview"));

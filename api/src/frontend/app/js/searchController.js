@@ -1,4 +1,3 @@
-
 function SearchController(config) {
     const configuration = config;
     let timerId = -1;
@@ -54,16 +53,29 @@ function SearchController(config) {
         return ids;
     }
 
+    function getActiveFilters() {
+        if ($('#actions button[data-action="open-tasks"]').hasClass('active')) {
+            return ['OPEN_TASKS'];
+        } else {
+            return [];
+        }
+    }
+
     function handleSearchInput() {
         let query = $(configuration.input).val();
         let tags = getActiveTags().join();
+        let filters = getActiveFilters().join();
         let url = (query !== '' ? '?q=' + encodeURIComponent(query) : '');
         if (tags.length > 0) {
             url = url + (query !== '' ? '&tags=' + encodeURIComponent(tags) : '?tags=' + encodeURIComponent(tags));
         }
+        if (filters.length > 0) {
+            url = url + (query !== '' || tags.length !== 0 ? '&filters=' + encodeURIComponent(filters) : '?filters=' + encodeURIComponent(filters));
+        }
         window.history.pushState({
             query: query,
-            tags: tags
+            tags: tags,
+            filters: filters
 
         }, "", '/' + url);
         search(configuration.endpoint + url);
@@ -95,10 +107,27 @@ function SearchController(config) {
             console.log(data);
             showError();
         })
+    }
 
-
-
-
+    function addActionListeners() {
+        $('#actions button').on('click', function () {
+            const button = $(this);
+            const action = button.data('action');
+            switch (action) {
+                case 'clear': {
+                    $('button #tags').removeClass('active');
+                    $('#actions button[data-action="open-tasks"]').removeClass('active');
+                    handleSearchInput();
+                    break;
+                }
+                case 'open-tasks': {
+                    button.toggleClass('active');
+                    handleSearchInput();
+                    break;
+                }
+            }
+            console.log(action)
+        })
     }
 
     this.init = function () {
@@ -112,15 +141,16 @@ function SearchController(config) {
             }, configuration.timeout);
         })
 
+        addActionListeners();
         loadAvailableTags();
         initializeSearchField();
     }
 
-    this.changed = function(type) {
+    this.changed = function (type) {
         if (type === 'files') {
             let searchUrl;
-            if (window.location.href.indexOf('?') !== - 1){
-                searchUrl = configuration.endpoint +  getLocationQueryParams();
+            if (window.location.href.indexOf('?') !== -1) {
+                searchUrl = configuration.endpoint + getLocationQueryParams();
             } else {
                 searchUrl = configuration.endpoint;
             }
@@ -153,7 +183,7 @@ function SearchController(config) {
                         </div>
                         <div class="column is-12">
                             <div class="message-subject is-size-5 mb-2 is-bold text-black-50">${element.title}</div>
-                            <div class="message-snippet">`+element.previewText+`</div>
+                            <div class="message-snippet">` + element.previewText + `</div>
                         </div>
                     </div>
                 </div>
@@ -213,6 +243,18 @@ function SearchController(config) {
         }
     }
 
+    function updateFilters(filters) {
+        for (const filter of filters) {
+            switch (filter.name) {
+                case 'OPEN_TASKS': {
+                    const taskButton = $('#actions button[data-action="open-tasks"]');
+                    filter.active ? taskButton.addClass('active') : taskButton.removeClass('active');
+                    break;
+                }
+            }
+        }
+    }
+
     function search(url) {
         showLoader();
         console.log('search called');
@@ -225,6 +267,7 @@ function SearchController(config) {
                 $(configuration.results).html('<div class="column has-text-centered">no search results</div>');
             }
             updateTags(data.tags);
+            updateFilters(data.filters);
             showResults();
         }).fail((data) => {
             console.log(data);

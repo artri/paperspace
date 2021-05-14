@@ -33,7 +33,7 @@ class TaskDocumentResponseTest {
         assertEquals("/task/" + taskId, response.getLinks().get("self"));
         assertEquals("/api/task/" + taskId, response.getLinks().get("edit"));
         assertEquals("/task/edit/" + taskId, response.getLinks().get("editPages"));
-        assertEquals("/api/task/" + taskId + "/pages", response.getLinks().get("pages"));
+        assertEquals("/api/edit/" + taskId, response.getLinks().get("pages"));
         assertEquals("/api/task/" + taskId + "/done", response.getLinks().get("done"));
         assertEquals("/api/download/" + binary.getId(), response.getLinks().get("download"));
         assertEquals("/api/view/" + binary.getId(), response.getLinks().get("view"));

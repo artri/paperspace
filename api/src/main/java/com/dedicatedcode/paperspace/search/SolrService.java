@@ -1,6 +1,7 @@
 package com.dedicatedcode.paperspace.search;
 
 import com.dedicatedcode.paperspace.DocumentService;
+import com.dedicatedcode.paperspace.SearchFilter;
 import com.dedicatedcode.paperspace.SearchResponse;
 import com.dedicatedcode.paperspace.TagService;
 import com.dedicatedcode.paperspace.model.Document;
@@ -48,11 +49,10 @@ public class SolrService {
     }
 
     public SearchResponse recent(int page, int maxResults) {
-        return query(null, null, page, maxResults);
+        return query(null, Collections.emptyList(), Collections.emptyList(), page, maxResults);
     }
 
-    public SearchResponse query(String queryString, List<UUID> tagIds, int page, int maxResults) {
-
+    public SearchResponse query(String queryString, List<UUID> tagIds, List<SearchFilter> filters, int page, int maxResults) {
         SolrQuery query = new SolrQuery(this.queryBuilder.build(queryString));
         query.setSort("createdAt", SolrQuery.ORDER.desc);
         query.setRows(maxResults);
@@ -62,9 +62,15 @@ public class SolrService {
             query.addHighlightField("description");
             query.addHighlightField("content");
         }
-        if (tagIds != null) {
-            for (UUID tagId : tagIds) {
-                query.addFilterQuery("tags:" + tagId);
+        for (UUID tagId : tagIds) {
+            query.addFilterQuery("tags:" + tagId);
+        }
+        for (SearchFilter filter : filters) {
+            if (filter == SearchFilter.OPEN_TASKS) {
+                query.addFilterQuery("documentType: TASK");
+                query.addFilterQuery("taskState: OPEN");
+            } else {
+                throw new IllegalStateException("Unexpected value: " + filter);
             }
         }
         query.setStart(page * maxResults);
@@ -107,14 +113,14 @@ public class SolrService {
 
             Map<String, Object> pagination = new HashMap<>();
             if (page > 0) {
-                pagination.put("previous", createSearchLink(queryString, tagIds, page - 1));
+                pagination.put("previous", createSearchLink(queryString, tagIds, filters, page - 1));
             }
             if (page < totalPages - 1) {
-                pagination.put("next", createSearchLink(queryString, tagIds, page + 1));
+                pagination.put("next", createSearchLink(queryString, tagIds, filters, page + 1));
             }
             List<String> pageLinks = new ArrayList<>();
             for (int i = 0; i < totalPages; i++) {
-                pageLinks.add(createSearchLink(queryString, tagIds, i));
+                pageLinks.add(createSearchLink(queryString, tagIds, filters, i));
             }
             pagination.put("pages", pageLinks);
             pagination.put("page", page);
@@ -133,19 +139,20 @@ public class SolrService {
                         UUID id = UUID.fromString(count.getName());
                         Tag tag = this.tagService.get(id);
                         if (tag != null) {
-                            tags.add(new SearchResponse.TagFacet(tag.getId(), tag.getName(), count.getCount(), tagIds != null && tagIds.contains(id)));
+                            tags.add(new SearchResponse.TagFacet(tag.getId(), tag.getName(), count.getCount(), tagIds.contains(id)));
                         }
                     }
                 });
             }
+            List<SearchResponse.FilterFacet> filterFacets = filters.stream().map(filter -> new SearchResponse.FilterFacet(filter.name(), -1, true)).collect(Collectors.toList());
 
-            return new SearchResponse(documents, pagination, tags);
+            return new SearchResponse(documents, pagination, tags, filterFacets);
         } catch (SolrServerException | IOException e) {
             throw new RuntimeException("unable to query solr", e);
         }
     }
 
-    private String createSearchLink(String queryString, List<UUID> tagIds, int page) {
+    private String createSearchLink(String queryString, List<UUID> tagIds, List<SearchFilter> filters, int page) {
         String link = "/api/search.json?";
         if (!StringUtils.isEmpty(queryString)) {
             link += "q=" + queryString + "&";
@@ -153,8 +160,11 @@ public class SolrService {
         if (page > 0) {
             link += "page=" + page + "&";
         }
-        if (tagIds != null) {
+        if (!tagIds.isEmpty()) {
             link += "tags=" + tagIds.stream().map(UUID::toString).collect(Collectors.joining(",")) + "&";
+        }
+        if (!filters.isEmpty()) {
+            link += "filters=" + filters.stream().map(Enum::name).collect(Collectors.joining(",")) + "&";
         }
         return link.substring(0, link.length() - 1);
     }
@@ -167,6 +177,7 @@ public class SolrService {
             solrInput.addField("createdAt", new Date(document.getCreatedAt().toInstant(ZoneOffset.UTC).toEpochMilli()));
             solrInput.addField("description", document.getDescription());
             solrInput.addField("documentType", document instanceof TaskDocument ? "TASK" : "DOCUMENT");
+            solrInput.addField("taskState", document instanceof TaskDocument ? ((TaskDocument) document).getState().name() : "");
             solrInput.addField("_schema_version_", SUPPORTED_SCHEMA_VERSION);
             solrInput.addField("content", document.getContent());
             solrInput.addField("tags", document.getTags().stream().map(Identifiable::getId).map(UUID::toString).collect(Collectors.toList()));
