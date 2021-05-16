@@ -92,3 +92,23 @@
   }
 }
 
+#customize-controls:active {
+  outline: none;
+  border: none;
+}
+
+#customize-controls:focus {
+  outline: none;
+  border: none;
+}
+
+#preview-container.fullscreen.fake-fullscreen {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  background: white;
+}

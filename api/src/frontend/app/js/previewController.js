@@ -16,18 +16,41 @@ function PreviewController(config) {
     const configuration = config;
     let slideIndex = 1;
 
+    function isFallbackFullScreenModeNeeded() {
+        if (document.cancelFullScreen) {
+            return false;
+        } else if (document.mozCancelFullScreen) {
+            return false;
+        } else if (document.webkitCancelFullScreen) {
+            return false;
+        } else return !document.msCancelFullScreen;
+    }
+
+    const useFallbackFullscreenMode = isFallbackFullScreenModeNeeded();
+
     function attachListeners() {
         $('.dot', configuration.gallery).on('click', function () {
             let slideToShow = $(this).data('index');
             currentSlide(slideIndex = (slideToShow + 1));
         })
+        var swipe = swiper(document.querySelector(configuration.gallery), function (e) {
+            if (e.direction === swipe.directions.left) {
+                plusSlides(1);
+            }
+            if (e.direction === swipe.directions.right) {
+                plusSlides(-1);
+            }
+        });
     }
 
     this.init = function () {
+        if (useFallbackFullscreenMode) {
+            console.warn("Using fallback fullscreen mode since there is no api for fullscreen.");
+            $('#preview-container').addClass('fake-fullscreen');
+        }
         $.get(configuration.pages).done((data) => {
             $(configuration.gallery).html(null);
             for (const item of data) {
-                console.log(item);
                 $(configuration.gallery).append(imageTemplate(item));
             }
             $(configuration.gallery).append(navigationTemplate(data));
@@ -47,17 +70,24 @@ function PreviewController(config) {
 
         $('[data-controls=fullscreen]').on('click', function () {
             if (!isFullscreen) {
-                fullScreen($(configuration.container)[0])
+                if (!useFallbackFullscreenMode) {
+                    fullScreen($(configuration.container)[0])
+                }
                 isFullscreen = true;
                 $('#preview-container').addClass('fullscreen');
             } else {
-                cancelFullScreen();
+                if (!useFallbackFullscreenMode) {
+                    cancelFullScreen()
+                }
                 isFullscreen = false;
                 $('#preview-container').removeClass('fullscreen');
             }
         })
         document.addEventListener("fullscreenchange", function (event) {
             isFullscreen = !!document.fullscreenElement;
+            if (!isFullscreen) {
+                $('#preview-container').removeClass('fullscreen');
+            }
         });
 
         document.addEventListener('keydown', function (event) {
@@ -129,6 +159,8 @@ function PreviewController(config) {
             document.webkitCancelFullScreen();
         } else if (document.msCancelFullScreen) {
             document.msCancelFullScreen();
+        } else {
+
         }
     }
 
@@ -139,6 +171,9 @@ function PreviewController(config) {
             element.webkitRequestFullScreen();
         } else if (element.mozRequestFullScreen) {
             element.mozRequestFullScreen();
+        } else {
+            alert('bla')
+
         }
     }
 
